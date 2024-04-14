@@ -20,7 +20,6 @@ export class ClientesComponent implements OnInit {
   Movimiento: Movimiento[] = [];
   totalImporteFacturas: number = 0;
   comparisonTotals: { [year: number]: number } = {};
-  importe: number = 0;
   selectedYear: number = 0; // Año actual (2025 por defecto)
   selectedComparisonYears: number[] = []; // Años seleccionados para comparación
   years: number[] = []; // Lista completa de años disponibles
@@ -100,7 +99,7 @@ export class ClientesComponent implements OnInit {
             const basebas = parseFloat(mov.BASEBAS) || 0;
             const imptbas = parseFloat(mov.IMPTBAS) || 0;
             const recbas = parseFloat(mov.RECBAS) || 0;
-            return acc + (basebas + imptbas + recbas);
+            return acc + (basebas);
           }, 0);
           this.updatePieChart();
         },
@@ -174,7 +173,7 @@ export class ClientesComponent implements OnInit {
             const basebas = parseFloat(mov.BASEBAS) || 0;
             const imptbas = parseFloat(mov.IMPTBAS) || 0;
             const recbas = parseFloat(mov.RECBAS) || 0;
-            return acc + (basebas + imptbas + recbas);
+            return acc + (basebas );
           }, 0);
         });
 
@@ -306,7 +305,7 @@ export class ClientesComponent implements OnInit {
       const basebas = parseFloat(mov.BASEBAS) || 0;
       const imptbas = parseFloat(mov.IMPTBAS) || 0;
       const recbas = parseFloat(mov.RECBAS) || 0;
-      importesPorMesPrimary[mesNombre] += basebas + imptbas + recbas;
+      importesPorMesPrimary[mesNombre] += basebas ;
     });
 
     const labels = meses;
@@ -366,7 +365,7 @@ export class ClientesComponent implements OnInit {
         const basebas = parseFloat(mov.BASEBAS) || 0;
         const imptbas = parseFloat(mov.IMPTBAS) || 0;
         const recbas = parseFloat(mov.RECBAS) || 0;
-        importesPorMesComparison[year][mesNombre] += basebas + imptbas + recbas;
+        importesPorMesComparison[year][mesNombre] += basebas ;
       });
     });
 

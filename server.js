@@ -33,7 +33,7 @@ app.get('/api/movimientos', (req, res) => {
         console.log('Conectado a la base de datos');
         const query = `
           SELECT
-            CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS,
+            CODTER, DOCFEC, BASEBAS.
             YEAR(DOCFEC) AS year
           FROM
             movalmc
@@ -49,8 +49,7 @@ app.get('/api/movimientos', (req, res) => {
                 CODTER: row.CODTER,
                 DOCFEC: row.DOCFEC,
                 BASEBAS: row.BASEBAS,
-                IMPTBAS: row.IMPTBAS,
-                RECBAS: row.RECBAS
+
               });
               return acc;
             }, {});
@@ -80,7 +79,7 @@ app.get('/api/movimientos', (req, res) => {
         console.log('Conectado a la base de datos');
         const query = `
           SELECT
-            CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS
+            CODTER, DOCFEC, BASEBAS
           FROM
             movalmc
           WHERE DOCFEC >= ? AND DOCFEC <= ?
@@ -183,7 +182,7 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
     pool.getConnection()
       .then(conn => {
         const query = `
-          SELECT CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS,
+          SELECT CODTER, DOCFEC, BASEBAS,
           YEAR(DOCFEC) AS year
           FROM movalmc
           WHERE CODTER = ? AND (${conditions})
@@ -199,8 +198,7 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
                 CODTER: row.CODTER,
                 DOCFEC: row.DOCFEC,
                 BASEBAS: row.BASEBAS,
-                IMPTBAS: row.IMPTBAS,
-                RECBAS: row.RECBAS
+
               });
               return acc;
             }, {});
@@ -224,7 +222,7 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
     pool.getConnection()
       .then(conn => {
         const query = `
-          SELECT CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS
+          SELECT CODTER, DOCFEC, BASEBAS
           FROM movalmc
           WHERE CODTER = ? AND DOCFEC BETWEEN ? AND ?
         `;
