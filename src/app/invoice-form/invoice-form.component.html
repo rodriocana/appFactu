@@ -1,0 +1,42 @@
+<h2 style="transform: translate(355px, 20px);">Crear Factura</h2>
+<form (ngSubmit)="onSubmit()">
+  <div class="Client-group">
+    <div class="form-group">
+      <label>Código de Factura:</label>
+      <input [(ngModel)]="invoice.code" name="code" required />
+    </div>
+    <div class="form-group" style="margin-left: 70px;">
+      <label>Número de Factura:</label>
+      <input [(ngModel)]="invoice.invoiceNumber" name="invoiceNumber" readonly />
+    </div>
+    <div class="form-group" style="margin-left: 120px;">
+      <label>Fecha:</label>
+      <input type="date" [(ngModel)]="invoice.date" name="date" required />
+    </div>
+    <div class="form-group">
+      <label>Nombre del Cliente:</label>
+      <input [(ngModel)]="invoice.clientName" name="clientName" required />
+    </div>
+    <div class="form-group">
+      <label style="margin-left: 70px">Estado:</label>
+      <select style="margin-left:70px" [(ngModel)]="invoice.status" name="status" required>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Pagada">Pagada</option>
+        <option value="Cancelada">Cancelada</option>
+      </select>
+    </div>
+  </div>
+
+  <h3>Productos</h3>
+  <div *ngFor="let item of invoice.items; let i = index" class="product-group">
+    <label>Descripción:</label>
+    <input [(ngModel)]="item.description" [name]="'description' + i" required />
+    <label>Cantidad:</label>
+    <input type="number" [(ngModel)]="item.quantity" [name]="'quantity' + i" (ngModelChange)="calculateTotal()" required />
+    <label>Precio:</label>
+    <input type="number" [(ngModel)]="item.price" [name]="'price' + i" (ngModelChange)="calculateTotal()" required />
+  </div>
+  <button type="button" (click)="addItem()">➕ Agregar Producto</button>
+  <p class="total">Total: {{ invoice.total }} €</p>
+  <button type="submit" class="btn-submit">💾 Guardar Factura</button>
+</form>

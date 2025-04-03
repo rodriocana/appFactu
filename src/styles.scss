@@ -1,1 +1,67 @@
-/* You can add global styles to this file, and also import other style files */
+// Variables de color
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$success-color: #28a745;
+$success-hover: #218838;
+$background-color: #f0f2f5;
+$white: #fff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$nav-width: 120px;
+
+// Importar FontAwesome
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: $background-color;
+  display: flex;
+  height: 100vh; // Asegura que ocupe toda la altura de la ventana
+}
+
+// Barra lateral
+nav {
+  width: 120px;
+  height: 100vh;
+  background: #007bff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  box-shadow: 2px 0px 16px rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-right: 2px solid #ffffff;
+
+  a {
+    color: $white;
+    text-decoration: none;
+    font-size: 20px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 0.3s;
+
+    i {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    &:hover {
+      color: $primary-hover;
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Contenido principal
+main {
+  flex: 1;
+  margin-left: 450px; // Deja espacio para la barra lateral
+  display: flex;
+  justify-content: center; // Centra horizontalmente
+  align-items: center; // Centra verticalmente
+  padding: 20px;
+}

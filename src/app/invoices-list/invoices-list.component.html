@@ -1,0 +1,23 @@
+<h2>Lista de Facturas</h2>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th> <!-- Nueva columna -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let invoice of invoices">
+        <td>{{ invoice.code }}</td>
+        <td>{{ invoice.clientName }}</td>
+        <td>{{ invoice.date }}</td>
+        <td>{{ invoice.total }} €</td>
+        <td [ngClass]="getStatusClass(invoice.status)">{{ invoice.status }}</td> <!-- Mostrar estado -->
+      </tr>
+    </tbody>
+  </table>
+</div>

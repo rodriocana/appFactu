@@ -1,0 +1,174 @@
+// Variables de color (puedes importarlas desde un archivo global si prefieres)
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$success-color: #28a745;
+$success-hover: #218838;
+$background-color: #f0f2f5;
+$white: #fff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 600px; // Limita el ancho del formulario
+}
+
+form {
+  width: 150%; // Asegura que no exceda el contenedor
+  padding: 20px;
+  background: $background-color;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px $shadow-color;
+
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: 0.3s;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0px 0px 5px rgba($primary-color, 0.5);
+        outline: none;
+      }
+    }
+  }
+
+  select { // Estilos para el <select>
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background: $white;
+    color: #444;
+    appearance: none; // Elimina el estilo nativo del sistema
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%23007bff" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>'); // Flecha personalizada
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: 0.3s;
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0px 0px 5px rgba($primary-color, 0.5);
+      outline: none;
+    }
+
+    option {
+      padding: 10px;
+      color: #444;
+    }
+  }
+}
+
+
+  h3 {
+    color: $primary-color;
+    margin-top: 20px;
+    border-bottom: 2px solid $primary-color;
+    padding-bottom: 5px;
+  }
+
+  .Client-group {
+    background: $white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px $shadow-color;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    label {
+      flex-basis: 100%;
+      font-weight: bold;
+    }
+
+    input {
+      flex: 1;
+      min-width: 120px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+  }
+
+  .product-group {
+    background: $white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px $shadow-color;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    label {
+      flex-basis: 100%;
+      font-weight: bold;
+    }
+
+    input {
+      flex: 1;
+      min-width: 120px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    font-weight: bold;
+
+    &[type="button"] {
+      background: $success-color;
+      color: $white;
+
+      &:hover {
+        background: $success-hover;
+      }
+    }
+
+    &.btn-submit {
+      background: $primary-color;
+      color: $white;
+      margin-top: 10px;
+
+      &:hover {
+        background: $primary-hover;
+      }
+    }
+  }
+
+  .total {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: $primary-color;
+  }

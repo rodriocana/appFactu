@@ -1,0 +1,99 @@
+// Variables de color (coinciden con tu aplicación)
+$primary-color: #007bff;
+$background-color: #f0f2f5;
+$white: #fff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$pending-color: #ffc107; // Amarillo
+$paid-color: #28a745;   // Verde
+$cancelled-color: #dc3545; // Rojo
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.chart-container {
+  display: flex;
+  align-items: center;
+  width: 500px;
+  margin-top: 20px;
+}
+
+.card {
+  background: $white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px $shadow-color;
+  padding: 20px;
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  &.total-invoices {
+    border-top: 4px solid $primary-color;
+    p { color: $primary-color; }
+  }
+
+  &.total-revenue {
+    border-top: 4px solid $paid-color;
+    p { color: $paid-color; }
+  }
+
+  &.pending {
+    border-top: 4px solid $pending-color;
+    p { color: $pending-color; }
+  }
+
+  &.paid {
+    border-top: 4px solid $paid-color;
+    p { color: $paid-color; }
+  }
+
+  &.cancelled {
+    border-top: 4px solid $cancelled-color;
+    p { color: $cancelled-color; }
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-width: 150px;
+    padding: 15px;
+
+    h3 { font-size: 1rem; }
+    p { font-size: 1.2rem; }
+  }
+}

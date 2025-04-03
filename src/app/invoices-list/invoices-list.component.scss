@@ -1,0 +1,109 @@
+// Variables de color
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$background-color: #f0f2f5;
+$white: #fff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$pending-color: #ffc107; // Amarillo para Pendiente
+$paid-color: #28a745;   // Verde para Pagada
+$cancelled-color: #dc3545; // Rojo para Cancelada
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.table-container {
+  overflow-x: auto;
+  width: 1026px;
+  background: $white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px $shadow-color;
+  padding: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+thead {
+  background: $primary-color;
+  color: $white;
+
+  th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+tbody {
+  tr {
+    border-bottom: 1px solid #eee;
+
+    &:hover {
+      background: #f5f5f5;
+      cursor: pointer;
+    }
+
+    td {
+      padding: 15px;
+
+
+      &:first-child {
+        font-weight: bold;
+        color: $primary-color;
+      }
+
+      &:nth-child(4) { // Columna del total
+        font-weight: bold;
+      }
+
+      &:last-child { // Columna del estado
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+    }
+  }
+
+  tr:last-child {
+    border-bottom: none;
+  }
+}
+
+// Clases para los estados
+.pending {
+  color: $pending-color;
+}
+
+.paid {
+  color: $paid-color;
+}
+
+.cancelled {
+  color: $cancelled-color;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 0.9rem;
+  }
+
+  thead th,
+  tbody td {
+    padding: 10px;
+  }
+}
