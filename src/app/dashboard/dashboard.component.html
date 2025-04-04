@@ -6,7 +6,7 @@
   </div>
   <div class="card total-revenue">
     <h3><i class="fas fa-dollar-sign"></i> Ingresos Totales</h3>
-    <p>{{ totalRevenue | number:'1.2-2' }} €</p>
+    <p>{{ totalRevenue }} €</p>
   </div>
   <div class="card pending">
     <h3><i class="fas fa-clock"></i> Facturas Pendientes</h3>
@@ -21,6 +21,8 @@
     <p>{{ cancelledCount }}</p>
   </div>
 </div>
+
+
 <!-- Gráficas -->
 <div class="chart-container">
   <!-- Gráfico Pie -->
@@ -31,3 +33,4 @@
   <!-- <canvas baseChart [data]="polarChartData" [type]="'line'"></canvas> -->
 
 </div>
+

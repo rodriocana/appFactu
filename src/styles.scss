@@ -1,5 +1,5 @@
 // Variables de color
-$primary-color: #007bff;
+$primary-color: #5d81a7;
 $primary-hover: #0056b3;
 $success-color: #28a745;
 $success-hover: #218838;
@@ -7,6 +7,7 @@ $background-color: #f0f2f5;
 $white: #fff;
 $shadow-color: rgba(0, 0, 0, 0.1);
 $nav-width: 120px;
+$top-nav-height: 38px; // Altura de la nueva barra superior
 
 // Importar FontAwesome
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
@@ -16,37 +17,37 @@ body {
   margin: 0;
   background: $background-color;
   display: flex;
-  height: 100vh; // Asegura que ocupe toda la altura de la ventana
+  height: 100vh;
 }
 
-// Barra lateral
-nav {
-  width: 120px;
-  height: 100vh;
-  background: #007bff;
+// Barra lateral (sin cambios)
+nav.sidebar {
+  width: $nav-width;
+  height: 100%;
+  background: $primary-color;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 10px;
   box-shadow: 2px 0px 16px rgba(0, 0, 0, 0.8);
   position: fixed;
   top: 0;
   left: 0;
-  border-right: 2px solid #ffffff;
+  border-right: 2px solid $white;
 
   a {
     color: $white;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 16px;
     margin: 20px 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     transition: 0.3s;
 
     i {
-      font-size: 28px;
-      margin-bottom: 5px;
+      font-size: 20px;
+      margin-right: 10px;
     }
 
     &:hover {
@@ -54,18 +55,64 @@ nav {
       transform: scale(1.1);
     }
   }
+
+  .logo {
+    width: 40%;
+    max-width: 150px;
+    margin-bottom: 20px;
+  }
+
 }
 
-// Contenido principal
+// Nueva barra superior
+nav.topbar {
+  width: 98%;
+  height: $top-nav-height;
+  background: $primary-color;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start; // Alinea los elementos a la izquierda
+  align-items: center;
+  margin-left: 122px;
+  box-shadow: 4px 2px 16px rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 0;
+  border-bottom: 2px solid white;
+  left: 0;
+  z-index: 10; // Asegura que esté por encima de otros elementos
+
+  a {
+    color: $white;
+    text-decoration: none;
+    font-size: 14x;
+    margin: 0 20px; // Espacio entre elementos
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: 0.3s;
+
+    i {
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    &:hover {
+      color: $primary-hover;
+      transform: scale(1.05); // Efecto más sutil que en la barra lateral
+    }
+  }
+}
+
+// Contenido principal ajustado
 main {
   flex: 1;
-  margin-left: 450px; // Deja espacio para la barra lateral
+  margin-left:450px; // Espacio para la barra lateral
+  margin-top: $top-nav-height; // Espacio para la barra superior
   display: flex;
-  justify-content: center; // Centra horizontalmente
-  align-items: center; // Centra verticalmente
+  justify-content: center;
+  align-items: center;
   padding: 20px;
 }
-
 hr{
   width: 100px;
 }
