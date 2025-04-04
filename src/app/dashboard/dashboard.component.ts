@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
     animation: {
       animateRotate: true,
       animateScale: true,
-      duration: 3500,
+      duration: 2500,
       easing: 'easeOutCubic'
     }
   };
