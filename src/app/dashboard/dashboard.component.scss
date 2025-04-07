@@ -1,100 +1,183 @@
-// Variables de color (coinciden con tu aplicación)
-$primary-color: #007bff;
-$background-color: #f0f2f5;
-$white: #fff;
-$shadow-color: rgba(0, 0, 0, 0.1);
-$pending-color: #ffc107; // Amarillo
-$paid-color: #28a745;   // Verde
-$cancelled-color: #dc3545; // Rojo
+// // Variables de color (coinciden con tu aplicación)
+// $primary-color: #1189a7;
+// $background-color: #f0f2f5;
+// $white: #fff;
+// $shadow-color: rgba(0, 0, 0, 0.1);
+// $pending-color: #ffc107; // Amarillo
+// $paid-color: #0c6822;   // Verde
+// $cancelled-color: #ca3645; // Rojo
 
-:host {
-  display: block;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-}
+// :host {
+//   display: block;
+//   width: 100%;
+//   max-width: 1000px;
+//   margin: 0 auto;
+// }
 
-h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 2rem;
-  font-weight: 600;
-}
+// h2 {
+//   text-align: center;
+//   color: #333;
+//   margin-bottom: 20px;
+//   font-size: 2rem;
+//   font-weight: 600;
+// }
 
 
-.dashboard-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
+// .dashboard-container {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 20px;
+//   justify-content: center;
+// }
+
+// .chart-container {
+//   display: flex;
+//   align-items: center;
+//   width: 500px;
+//   margin-top: 20px;
+// }
+
+// .card {
+//   background: $white;
+//   border-radius: 8px;
+//   box-shadow: 0 4px 10px $shadow-color;
+//   padding: 20px;
+//   flex: 1;
+//   min-width: 200px;
+//   text-align: center;
+//   transition: transform 0.5s ease;
+
+//   &:hover {
+//     transform: translateY(-5px);
+//   }
+
+//   h3 {
+//     font-size: 1.2rem;
+//     margin-bottom: 10px;
+//     color: #333;
+//     cursor: default;
+//   }
+
+//   p {
+//     font-size: 1.5rem;
+//     font-weight: bold;
+//     margin: 0;
+//     cursor: default;
+//   }
+
+//   &.total-invoices {
+//     border-top: 4px solid $primary-color;
+//     p { color: $primary-color; }
+//   }
+
+//   &.total-revenue {
+//     border-top: 4px solid $primary-color;
+//     p { color: $primary-color; }
+//   }
+
+//   &.pending {
+//     border-top: 4px solid $pending-color;
+//     p { color: $pending-color; }
+//   }
+
+//   &.paid {
+//     border-top: 4px solid $paid-color;
+//     p { color: $paid-color; }
+//   }
+
+//   &.cancelled {
+//     border-top: 4px solid $cancelled-color;
+//     p { color: $cancelled-color; }
+//   }
+// }
+
+// @media (max-width: 768px) {
+//   .card {
+//     min-width: 150px;
+//     padding: 15px;
+
+//     h3 { font-size: 1rem; }
+//     p { font-size: 1.2rem; }
+//   }
+// }
+
 
 .chart-container {
   display: flex;
-  align-items: center;
-  width: 500px;
-  margin-top: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+  margin-top: 40px;
 }
 
-.card {
-  background: $white;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px $shadow-color;
+.bar,
+.line,
+.pie {
+  background-color: #ffffff;
+  border-radius: 12px;
   padding: 20px;
-  flex: 1;
-  min-width: 200px;
-  text-align: center;
-  transition: transform 0.3s ease;
+  width: 400px;
+  height: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  &:hover {
-    transform: translateY(-5px);
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px; // Espacio entre la etiqueta y el select
+  margin-bottom: 20px; // Espacio debajo del selector
+  font-family: 'Arial', sans-serif; // Fuente moderna y legible
+
+  label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333; // Color oscuro y profesional
   }
 
-  h3 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #333;
+  select {
+    appearance: none; // Elimina el estilo nativo del navegador
+    background-color: #fff; // Fondo blanco
+    border: 1px solid #dcdcdc; // Borde sutil
+    border-radius: 8px; // Bordes redondeados
+    padding: 10px 30px 10px 15px; // Espaciado interno (derecha extra para la flecha)
+    font-size: 16px;
+    color: #444; // Color del texto
+    cursor: pointer;
+    outline: none; // Quita el contorno al hacer foco
+    transition: all 0.3s ease; // Transición suave para hover y foco
+    width: 150px; // Ancho fijo, ajusta según necesites
+
+    // Flecha personalizada
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); // Flecha SVG
+    background-repeat: no-repeat;
+    background-position: right 10px center; // Posición de la flecha
   }
 
-  p {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
+  // Efecto hover
+  select:hover {
+    border-color: #3e95cd; // Color que combina con tu gráfica de líneas
+    box-shadow: 0 0 5px rgba(62, 149, 205, 0.3); // Sombra sutil
   }
 
-  &.total-invoices {
-    border-top: 4px solid $primary-color;
-    p { color: $primary-color; }
+  // Efecto focus
+  select:focus {
+    border-color: #3e95cd;
+    box-shadow: 0 0 8px rgba(62, 149, 205, 0.5); // Sombra más pronunciada
   }
 
-  &.total-revenue {
-    border-top: 4px solid $paid-color;
-    p { color: $paid-color; }
-  }
-
-  &.pending {
-    border-top: 4px solid $pending-color;
-    p { color: $pending-color; }
-  }
-
-  &.paid {
-    border-top: 4px solid $paid-color;
-    p { color: $paid-color; }
-  }
-
-  &.cancelled {
-    border-top: 4px solid $cancelled-color;
-    p { color: $cancelled-color; }
+  // Estilo para las opciones (no todos los navegadores lo respetan)
+  select option {
+    padding: 10px;
+    background-color: #fff;
+    color: #444;
   }
 }
 
-@media (max-width: 768px) {
-  .card {
-    min-width: 150px;
-    padding: 15px;
 
-    h3 { font-size: 1rem; }
-    p { font-size: 1.2rem; }
-  }
-}
+

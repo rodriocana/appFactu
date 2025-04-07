@@ -136,7 +136,7 @@ form {
   }
 
   button {
-    width: 100%;
+    width: 21%;
     padding: 12px;
     font-size: 16px;
     border: none;
@@ -157,12 +157,16 @@ form {
     &.btn-submit {
       background: $primary-color;
       color: $white;
-      margin-top: 10px;
 
       &:hover {
         background: $primary-hover;
       }
     }
+  }
+
+  .button-container{
+    display: flex;
+    gap: 20px;
   }
 
   .total {

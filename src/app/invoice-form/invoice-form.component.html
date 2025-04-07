@@ -36,7 +36,10 @@
     <label>Precio:</label>
     <input type="number" [(ngModel)]="item.price" [name]="'price' + i" (ngModelChange)="calculateTotal()" required />
   </div>
+
+  <div class="button-container">
   <button type="button" (click)="addItem()">➕ Agregar Producto</button>
-  <p class="total">Total: {{ invoice.total }} €</p>
   <button type="submit" class="btn-submit">💾 Guardar Factura</button>
+</div>
+<p class="total">Total: {{ invoice.total }} €</p>
 </form>
