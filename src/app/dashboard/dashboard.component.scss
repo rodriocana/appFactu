@@ -18,6 +18,46 @@ $cancelled-color: #ca3645;
   font-family: 'Montserrat', sans-serif;
 }
 
+.info-card {
+  background-color: #fff;
+  border-top: 4px solid #25a9d9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-left: -95px;
+  transition: margin-left 0.2s ease-in-out, width 0.2s ease-in-out;
+
+  &.sidebar-open {
+    margin-left: -11px;
+    width: 96%;
+  }
+
+  .percentage {
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+
+
+    &.positive {
+      color: $paid-color; /* Verde para positivo */
+    }
+
+    &.negative {
+      color: $cancelled-color; /* Rojo para negativo */
+
+    }
+  }
+}
+
+
 .chart-container {
   display: flex;
   flex-direction: row;
@@ -26,7 +66,7 @@ $cancelled-color: #ca3645;
   gap: 30px;
   margin-top: 40px;
   transition: margin-left 0.3s ease;
-  margin-left: -120px;
+  margin-left: -140px;
 
   &.sidebar-open {
     margin-left: -42px;
@@ -34,9 +74,10 @@ $cancelled-color: #ca3645;
 }
 
 .bar,
-.line {
+.line,
+.pie {
   background-color: $white;
-  border: 2px solid #25a9d9;
+  border-top: 4px solid #25a9d9;
   border-radius: 12px;
   padding: 20px;
   width: 470px;
@@ -47,19 +88,6 @@ $cancelled-color: #ca3645;
   justify-content: center;
 }
 
-.pie {
-  background-color: $white;
-  border: 2px solid #25a9d9;
-  border-radius: 12px;
-  padding: 20px;
-  width: 470px;
-  box-shadow: 0 4px 8px $shadow-color;
-  transition: all 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .total-facturas {
   font-size: 18px;
@@ -70,22 +98,9 @@ $cancelled-color: #ca3645;
   transition: all 0.3s ease-in-out;
 }
 
-.info-card {
-  background-color: #fff;
-  border-top: 4px solid #25a9d9;
-  border-radius: 12px;
-  transform: translate(-545px, 10px);
-  padding: 20px;
-  width: 28%;
-  max-width: 1500px;
-  height: 100px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3sease-in-out;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+
+
+
 
   h3 {
     font-size: 20px;
@@ -102,14 +117,16 @@ $cancelled-color: #ca3645;
     margin: 0;
     font-family: 'Montserrat', sans-serif;
   }
-}
+
+
+
 
 .year-selector-container {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
-  margin-left: 80px;
+  margin-left: 11px;
   transition: margin-left 0.3s ease;
 
   &.sidebar-open {
@@ -182,7 +199,7 @@ $cancelled-color: #ca3645;
 
 .pdf-button {
   margin-top: 20px;
-  margin-left: -78px;
+  margin-left: -142px;
   padding: 10px 20px;
   background-color: #1189a7;
   color: #fff;
@@ -199,6 +216,6 @@ $cancelled-color: #ca3645;
   }
 
   &.sidebar-open {
-    margin-left: -29px;
+    margin-left: -43px;
   }
 }
