@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SidebarService } from './sidebar.service';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +11,15 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  isSidebarOpen = false; // Estado inicial: cerrada, definido como propiedad de la clase
+  isSidebarOpen = false;
+
+  constructor(private sidebarService: SidebarService) {
+    this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
+      this.isSidebarOpen = isOpen;
+    });
+  }
 
   toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen; // Alterna el estado, usando 'this' para acceder a la propiedad
+    this.sidebarService.toggleSidebar();
   }
 }

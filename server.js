@@ -23,8 +23,7 @@ const pool = mariadb.createPool({
 
 // ACCEDER A TARJETA SOCIO DESDE LA TABLA SOCIO
 app.get('/api/movimientos', (req, res) => {
-
-  const year = req.query.year || '2024'; // Año por defecto 2024 si no se envía
+  const year = req.query.year || '2024';
   const startDate = `${year}-01-01`;
   const endDate = `${year}-12-31`;
 
@@ -33,7 +32,7 @@ app.get('/api/movimientos', (req, res) => {
       console.log('Conectado a la base de datos');
       const query = `
         SELECT
-          CODTER, DOCFEC, BASEBAS
+          CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS
         FROM
           movalmc
         WHERE DOCFEC >= ? AND DOCFEC <= ?
@@ -41,14 +40,14 @@ app.get('/api/movimientos', (req, res) => {
 
       conn.query(query, [startDate, endDate])
         .then(rows => {
-          res.json(rows); // Enviar los datos como JSON
+          res.json(rows);
         })
         .catch(err => {
           console.error('Error en la consulta:', err);
           res.status(500).json({ error: 'Error al obtener los datos' });
         })
         .finally(() => {
-          conn.end(); // Liberar la conexión
+          conn.end();
         });
     })
     .catch(err => {

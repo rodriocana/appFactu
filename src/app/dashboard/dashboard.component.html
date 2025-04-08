@@ -1,13 +1,22 @@
-  <!-- Selector de años -->
-  <div class="year-selector">
-    <label for="yearSelect">Selecciona un año: </label>
-    <select id="yearSelect" [(ngModel)]="selectedYear" (change)="onYearChange()">
+
+<div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <div class="year-selector primary">
+    <label for="yearSelectPrimary">Año principal: </label>
+    <select id="yearSelectPrimary" [(ngModel)]="selectedYear" (change)="onYearChange()">
       <option *ngFor="let year of years" [value]="year">{{ year }}</option>
     </select>
   </div>
-<div class="chart-container">
+  <div class="year-selector comparison">
+    <label for="yearSelectComparison">Año comparación: </label>
+    <select id="yearSelectComparison" [(ngModel)]="selectedYearComparison" (change)="onComparisonYearChange()">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  </div>
+</div>
+<div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="pie">
     <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>
+    <!-- <p class="total-facturas">Total Facturas: {{ totalImporteFacturas | number:'1.2-2' }} €</p> -->
   </div>
   <div class="bar">
     <canvas baseChart [data]="chartDataBar" [options]="chartOptionsBar" [type]="'bar'"></canvas>
@@ -15,6 +24,11 @@
   <div class="line">
     <canvas baseChart [data]="chartDataLine" [options]="chartOptionsLine" [type]="'line'"></canvas>
   </div>
+  <div class="info-card">
+    <h3>Total Facturas</h3>
+    <p>{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+  </div>
 </div>
 
-
+<button (click)="generatePDF()" class="pdf-button"[ngClass]="{'sidebar-open': isSidebarOpen}">
+  <i class="fa-solid fa-download"></i> Descargar PDF</button>

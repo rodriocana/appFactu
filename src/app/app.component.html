@@ -5,35 +5,31 @@
     <a href="#"><i class="fas fa-user"></i> Perfil</a>
     <a href="#"><i class="fas fa-cog"></i> Configuración</a>
     <a href="#"><i class="fas fa-sign-out-alt"></i> Salir</a>
-    <img src="assets/logoinfocon.ico" alt="Logo" class="logo" />
   </div>
 </nav>
 
 <!-- Barra lateral -->
 <nav class="sidebar" [class.open]="isSidebarOpen">
+  <img [src]="isSidebarOpen ? 'assets/logoInfocon.png' : 'assets/logoinfocon.ico'"
+       alt="Logo"
+       class="logo"
+       [ngClass]="{'small-logo': !isSidebarOpen}" />
+       <hr>
 
-
+  <!-- <h2 class="h2-menu">FACTURAS</h2> -->
   <a [routerLink]="'/invoices'" title="Lista de Facturas">
     <i class="fas fa-file-invoice"></i>
     <span *ngIf="isSidebarOpen">Facturas</span>
   </a>
-  <hr>
-  <a [routerLink]="'/create-invoice'" title="Crear Factura">
-    <i class="fas fa-plus-circle"></i>
-    <span *ngIf="isSidebarOpen">Crear</span>
-  </a>
-  <hr>
   <a [routerLink]="'/dashboard'" title="Resumen">
     <i class="fas fa-chart-line"></i>
     <span *ngIf="isSidebarOpen">Resumen</span>
   </a>
-  <hr>
   <a [routerLink]="'/clients'" title="Clientes">
     <i class="fas fa-users"></i>
     <span *ngIf="isSidebarOpen">Clientes</span>
   </a>
 
-  <!-- Botón para alternar la barra lateral -->
   <button class="toggle-btn" (click)="toggleSidebar()">
     <i class="fas" [ngClass]="isSidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
   </button>

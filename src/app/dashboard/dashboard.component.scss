@@ -1,183 +1,204 @@
-// // Variables de color (coinciden con tu aplicación)
-// $primary-color: #1189a7;
-// $background-color: #f0f2f5;
-// $white: #fff;
-// $shadow-color: rgba(0, 0, 0, 0.1);
-// $pending-color: #ffc107; // Amarillo
-// $paid-color: #0c6822;   // Verde
-// $cancelled-color: #ca3645; // Rojo
 
-// :host {
-//   display: block;
-//   width: 100%;
-//   max-width: 1000px;
-//   margin: 0 auto;
-// }
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 
-// h2 {
-//   text-align: center;
-//   color: #333;
-//   margin-bottom: 20px;
-//   font-size: 2rem;
-//   font-weight: 600;
-// }
+// Variables de color
+$primary-color: #1189a7;
+$background-color: #f0f2f5;
+$white: #fff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$pending-color: #ffc107;
+$paid-color: #0c6822;
+$cancelled-color: #ca3645;
 
-
-// .dashboard-container {
-//   display: flex;
-//   flex-wrap: wrap;
-//   gap: 20px;
-//   justify-content: center;
-// }
-
-// .chart-container {
-//   display: flex;
-//   align-items: center;
-//   width: 500px;
-//   margin-top: 20px;
-// }
-
-// .card {
-//   background: $white;
-//   border-radius: 8px;
-//   box-shadow: 0 4px 10px $shadow-color;
-//   padding: 20px;
-//   flex: 1;
-//   min-width: 200px;
-//   text-align: center;
-//   transition: transform 0.5s ease;
-
-//   &:hover {
-//     transform: translateY(-5px);
-//   }
-
-//   h3 {
-//     font-size: 1.2rem;
-//     margin-bottom: 10px;
-//     color: #333;
-//     cursor: default;
-//   }
-
-//   p {
-//     font-size: 1.5rem;
-//     font-weight: bold;
-//     margin: 0;
-//     cursor: default;
-//   }
-
-//   &.total-invoices {
-//     border-top: 4px solid $primary-color;
-//     p { color: $primary-color; }
-//   }
-
-//   &.total-revenue {
-//     border-top: 4px solid $primary-color;
-//     p { color: $primary-color; }
-//   }
-
-//   &.pending {
-//     border-top: 4px solid $pending-color;
-//     p { color: $pending-color; }
-//   }
-
-//   &.paid {
-//     border-top: 4px solid $paid-color;
-//     p { color: $paid-color; }
-//   }
-
-//   &.cancelled {
-//     border-top: 4px solid $cancelled-color;
-//     p { color: $cancelled-color; }
-//   }
-// }
-
-// @media (max-width: 768px) {
-//   .card {
-//     min-width: 150px;
-//     padding: 15px;
-
-//     h3 { font-size: 1rem; }
-//     p { font-size: 1.2rem; }
-//   }
-// }
-
+:host {
+  display: block;
+  width: 100%;
+  max-width: 2500px;
+  margin: 0 auto;
+  font-family: 'Montserrat', sans-serif;
+}
 
 .chart-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Permite que el card se coloque debajo */
   justify-content: center;
   gap: 30px;
-  width: 100%;
   margin-top: 40px;
+  transition: margin-left 0.3s ease;
+  margin-left: -120px;
+
+  &.sidebar-open {
+    margin-left: -42px;
+  }
 }
 
 .bar,
-.line,
-.pie {
-  background-color: #ffffff;
+.line {
+  background-color: $white;
+  border: 2px solid #25a9d9;
   border-radius: 12px;
   padding: 20px;
-  width: 400px;
-  height: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 470px;
+  box-shadow: 0 4px 8px $shadow-color;
   transition: all 0.3s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.pie {
+  background-color: $white;
+  border: 2px solid #25a9d9;
+  border-radius: 12px;
+  padding: 20px;
+  width: 470px;
+  box-shadow: 0 4px 8px $shadow-color;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-facturas {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 10px;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.info-card {
+  background-color: #fff;
+  border-top: 4px solid #25a9d9;
+  border-radius: 12px;
+  transform: translate(-545px, 10px);
+  padding: 20px;
+  width: 28%;
+  max-width: 1500px;
+  height: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3sease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  p {
+    font-size: 24px;
+    font-weight: 700;
+    color: $primary-color; /* Color destacado para el valor */
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+.year-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  margin-left: 80px;
+  transition: margin-left 0.3s ease;
+
+  &.sidebar-open {
+    margin-left: 119px;
+  }
+}
+
 .year-selector {
   display: flex;
   align-items: center;
-  gap: 10px; // Espacio entre la etiqueta y el select
-  margin-bottom: 20px; // Espacio debajo del selector
-  font-family: 'Arial', sans-serif; // Fuente moderna y legible
+  gap: 10px;
 
   label {
     font-size: 16px;
     font-weight: 500;
-    color: #333; // Color oscuro y profesional
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
   }
 
   select {
-    appearance: none; // Elimina el estilo nativo del navegador
-    background-color: #fff; // Fondo blanco
-    border: 1px solid #dcdcdc; // Borde sutil
-    border-radius: 8px; // Bordes redondeados
-    padding: 10px 30px 10px 15px; // Espaciado interno (derecha extra para la flecha)
+    appearance: none;
+    background-color: $white;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 10px 30px 10px 15px;
     font-size: 16px;
-    color: #444; // Color del texto
-    cursor: pointer;
-    outline: none; // Quita el contorno al hacer foco
-    transition: all 0.3s ease; // Transición suave para hover y foco
-    width: 150px; // Ancho fijo, ajusta según necesites
-
-    // Flecha personalizada
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); // Flecha SVG
-    background-repeat: no-repeat;
-    background-position: right 10px center; // Posición de la flecha
-  }
-
-  // Efecto hover
-  select:hover {
-    border-color: #3e95cd; // Color que combina con tu gráfica de líneas
-    box-shadow: 0 0 5px rgba(62, 149, 205, 0.3); // Sombra sutil
-  }
-
-  // Efecto focus
-  select:focus {
-    border-color: #3e95cd;
-    box-shadow: 0 0 8px rgba(62, 149, 205, 0.5); // Sombra más pronunciada
-  }
-
-  // Estilo para las opciones (no todos los navegadores lo respetan)
-  select option {
-    padding: 10px;
-    background-color: #fff;
     color: #444;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 150px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  &.primary select {
+    border-color: #3e95cd;
+  }
+
+  &.comparison select {
+    border-color: #ff5733;
+  }
+
+  select:hover {
+    box-shadow: 0 0 5px rgba(62, 149, 205, 0.3);
+  }
+
+  select:focus {
+    box-shadow: 0 0 8px rgba(62, 149, 205, 0.5);
+  }
+
+  &.primary select:focus {
+    border-color: #3e95cd;
+  }
+
+  &.comparison select:focus {
+    border-color: #ff5733;
+    box-shadow: 0 0 8px rgba(255, 87, 51, 0.5);
   }
 }
 
+.vs {
+  font-size: 16px;
+  font-weight: 700;
+  color: #666;
+  font-family: 'Montserrat', sans-serif;
+}
 
+.pdf-button {
+  margin-top: 20px;
+  margin-left: -78px;
+  padding: 10px 20px;
+  background-color: #1189a7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
+  &:hover {
+    background-color: darken($primary-color, 10%);
+    box-shadow: 0 0 5px rgba(17, 137, 167, 0.5);
+  }
+
+  &.sidebar-open {
+    margin-left: -29px;
+  }
+}
