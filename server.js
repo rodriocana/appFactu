@@ -21,7 +21,7 @@ const pool = mariadb.createPool({
   acquireTimeout: 5000
 });
 
-// ACCEDER A TARJETA SOCIO DESDE LA TABLA SOCIO
+
 app.get('/api/movimientos', (req, res) => {
   const year = req.query.year || '2024';
   const startDate = `${year}-01-01`;
@@ -37,6 +37,40 @@ app.get('/api/movimientos', (req, res) => {
           movalmc
         WHERE DOCFEC >= ? AND DOCFEC <= ?
       `;
+
+      conn.query(query, [startDate, endDate])
+        .then(rows => {
+          res.json(rows);
+        })
+        .catch(err => {
+          console.error('Error en la consulta:', err);
+          res.status(500).json({ error: 'Error al obtener los datos' });
+        })
+        .finally(() => {
+          conn.end();
+        });
+    })
+    .catch(err => {
+      console.error('Error de conexión:', err);
+      res.status(500).json({ error: 'Error de conexión a la base de datos' });
+    });
+});
+
+app.get('/api/codigoCliente', (req, res) => {
+  const year = req.query.year || '2024';
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+
+  pool.getConnection()
+    .then(conn => {
+      console.log('Conectado a la base de datos');
+      const query = `
+        SELECT
+          CODTER
+        FROM
+          movalmc
+          where docfec >= ? and docfec <= ?
+          `;
 
       conn.query(query, [startDate, endDate])
         .then(rows => {

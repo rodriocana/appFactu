@@ -1,12 +1,23 @@
-
-
 <div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
-  <h3>Total Facturas</h3>
-  <p>{{ totalImporteFacturas | number:'1.2-2' }} €</p>
-  <span class="percentage" [ngClass]="{'positive': getPercentageDifference() >= 0, 'negative': getPercentageDifference() < 0}">
-    {{ getPercentageDifference() >= 0 ? '+' : '' }}{{ getPercentageDifference() | number:'1.2-2' }}% vs {{ selectedYearComparison }}
-  </span>
+  <div class="card-container">
+    <div class="card-item left">
+      <h3>Total Facturas  <span style="color: #1189a7;">{{selectedYear}}</span></h3>
+      <p>{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+      <span class="percentage" [ngClass]="{'positive': getPercentageDifference() >= 0, 'negative': getPercentageDifference() < 0}">
+        {{ getPercentageDifference() >= 0 ? '+' : '' }}{{ getPercentageDifference() | number:'1.2-2' }}% vs {{ selectedYearComparison }}
+      </span>
+    </div>
+    <div class="card-item center">
+      <h3>Diferencia</h3>
+      <p style="color: #588f83">{{ (totalImporteFacturas - totalImporteFacturasComparison) | number:'1.2-2' }} €</p>
+    </div>
+    <div class="card-item right">
+      <h3>Total Facturas <span style="color:#ff5733">{{selectedYearComparison}}</span></h3>
+      <p style="color: #ff5733;">{{ totalImporteFacturasComparison | number:'1.2-2' }} €</p>
+    </div>
+  </div>
 </div>
+
 <div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="year-selector primary">
     <label for="yearSelectPrimary">Año principal: </label>
@@ -25,7 +36,6 @@
 <div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="pie">
     <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>
-    <!-- <p class="total-facturas">Total Facturas: {{ totalImporteFacturas | number:'1.2-2' }} €</p> -->
   </div>
   <div class="bar">
     <canvas baseChart [data]="chartDataBar" [options]="chartOptionsBar" [type]="'bar'"></canvas>
@@ -33,8 +43,8 @@
   <div class="line">
     <canvas baseChart [data]="chartDataLine" [options]="chartOptionsLine" [type]="'line'"></canvas>
   </div>
-
 </div>
 
-<button (click)="generatePDF()" class="pdf-button"[ngClass]="{'sidebar-open': isSidebarOpen}">
-  <i class="fa-solid fa-download"></i> Descargar PDF</button>
+<button (click)="generatePDF()" class="pdf-button" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <i class="fa-solid fa-download"></i> Descargar PDF
+</button>

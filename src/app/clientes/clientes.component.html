@@ -1,0 +1,50 @@
+<div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <div class="card-container">
+    <!-- Año actual (2025) -->
+    <div class="card-item-actual">
+      <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
+      <p>{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+    </div>
+    <!-- Año anterior fijo (2024) -->
+    <div class="card-item">
+      <h3><span style="color: #ff5733;">{{defaultComparisonYear}}</span></h3>
+      <p style="color: #ff5733;">{{ comparisonTotals[defaultComparisonYear] | number:'1.2-2' }} €</p>
+      <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
+        {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
+      </span>
+    </div>
+    <!-- Años de comparación adicionales -->
+    <div class="card-item" *ngFor="let year of selectedComparisonYears; let i = index">
+      <h3><span [style.color]="['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][i % 4]">{{year}}</span></h3>
+      <p [style.color]="['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][i % 4]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
+      <span class="percentage" [ngClass]="{'positive': getPercentageDifference(year) >= 0, 'negative': getPercentageDifference(year) < 0}">
+        {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}% vs {{selectedYear}}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <div class="year-selector comparison">
+    <label for="yearSelectComparison">Años de comparación adicionales (máx. 4): </label>
+    <select id="yearSelectComparison" multiple [(ngModel)]="selectedComparisonYears" (change)="onComparisonYearsChange()" size="4">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  </div>
+</div>
+
+<div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <div class="pie">
+    <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>
+  </div>
+  <div class="bar">
+    <canvas baseChart [data]="chartDataBar" [options]="chartOptionsBar" [type]="'bar'"></canvas>
+  </div>
+  <div class="line">
+    <canvas baseChart [data]="chartDataLine" [options]="chartOptionsLine" [type]="'line'"></canvas>
+  </div>
+</div>
+
+<button (click)="generatePDF()" class="pdf-button" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <i class="fa-solid fa-download"></i> Descargar PDF
+</button>

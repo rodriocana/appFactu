@@ -16,7 +16,6 @@ $cancelled-color: #ca3645;
   padding: 20px;
   margin-bottom: 16px;
   width: 100%;
-  height: 100px;
   box-shadow: 0 4px 8px $shadow-color;
   transition: margin-left 0.21s ease-in-out, width 0.21s ease-in-out;
   margin-left: -85px;
@@ -28,73 +27,118 @@ $cancelled-color: #ca3645;
 
   .card-container {
     display: flex;
-    justify-content: space-between; /* Distribuye los elementos con espacio entre ellos */
-    align-items: center; /* Centra verticalmente los elementos */
+    flex-direction: row; // Horizontal de izquierda a derecha
+    justify-content: flex-start; // Comienza desde la izquierda
+    align-items: center; // Centra verticalmente los elementos
     width: 100%;
+    gap: 95px; // Espacio entre cada card-item
+    overflow-x: auto; // Permite scroll horizontal si hay muchos años
+    flex-wrap: nowrap; // Evita que los elementos se envuelvan a la siguiente línea
   }
 
   .card-item {
     display: flex;
-    flex-direction: column; /* Organiza el contenido verticalmente */
-    flex: 1; /* Permite que cada item ocupe espacio igual */
-    min-width: 0; /* Evita desbordamiento */
+    flex-direction: column;
+    min-width: 150px; // Ancho mínimo para cada bloque
+    text-align: center; // Centra el texto en cada bloque
+
+    h3 {
+      font-size: 22px; // Tamaño reducido para que quepan más elementos
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    p {
+      font-size: 18px; // Tamaño ajustado para los valores
+      font-weight: 700;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .percentage {
+      font-size: 12px; // Tamaño más pequeño para el porcentaje
+      font-weight: 500;
+      font-family: 'Montserrat', sans-serif;
+      margin-top: 5px;
+
+      &.positive {
+        color: $paid-color; // Verde para positivo
+      }
+
+      &.negative {
+        color: $cancelled-color; // Rojo para negativo
+      }
+    }
   }
 
-  .card-item.left {
-    text-align: left; /* Alinea el texto a la izquierda */
-  }
+  .card-item-actual{
+    display: flex;
+    flex-direction: column;
+    min-width: 150px; // Ancho mínimo para cada bloque
+    text-align: center; // Centra el texto en cada bloque
+    margin-bottom: 20px;
 
-  .card-item.center {
-    text-align: center; /* Alinea el texto al centro */
-  }
+    h3 {
+      font-size: 22px; // Tamaño reducido para que quepan más elementos
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-family: 'Montserrat', sans-serif;
+    }
 
-  .card-item.right {
-    text-align: right; /* Alinea el texto a la derecha */
-  }
+    p {
+      font-size: 18px; // Tamaño ajustado para los valores
+      font-weight: 700;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
 
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-    font-family: 'Montserrat', sans-serif;
   }
+}
 
-  p {
-    font-size: 24px;
-    font-weight: 700;
-    color: $primary-color;
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-  }
-
-  .percentage {
+.client-selector {
+  margin: 10px;
+  select {
+    appearance: none;
+    background-color: $white;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 10px 30px 10px 15px;
     font-size: 16px;
-    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 150px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
     font-family: 'Montserrat', sans-serif;
-
-    &.positive {
-      color: $paid-color; /* Verde para positivo */
-    }
-
-    &.negative {
-      color: $cancelled-color; /* Rojo para negativo */
-    }
   }
 }
 
 .chart-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap; /* Permite que el card se coloque debajo */
+  flex-wrap: wrap;
   justify-content: center;
   gap: 30px;
-  margin-top: 40px;
+  margin-top: 29px;
   transition: margin-left 0.3s ease;
   margin-left: -140px;
 
   &.sidebar-open {
     margin-left: -42px;
+  }
+}
+
+.year-selector.comparison {
+  select[multiple] {
+    width: 150px;
+    padding: 5px;
+    border-radius: 4px;
   }
 }
 
@@ -113,7 +157,6 @@ $cancelled-color: #ca3645;
   justify-content: center;
 }
 
-
 .total-facturas {
   font-size: 18px;
   font-weight: 600;
@@ -122,29 +165,6 @@ $cancelled-color: #ca3645;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.3s ease-in-out;
 }
-
-
-
-
-
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-    font-family: 'Montserrat', sans-serif;
-  }
-
-  p {
-    font-size: 24px;
-    font-weight: 700;
-    color: $primary-color; /* Color destacado para el valor */
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-  }
-
-
-
 
 .year-selector-container {
   display: flex;
@@ -194,7 +214,7 @@ $cancelled-color: #ca3645;
   }
 
   &.comparison select {
-    border-color: #ff5733;
+    border-color: #3fccf0;
   }
 
   select:hover {
@@ -221,7 +241,6 @@ $cancelled-color: #ca3645;
   color: #666;
   font-family: 'Montserrat', sans-serif;
 }
-
 
 .pdf-button {
   margin-top: 20px;

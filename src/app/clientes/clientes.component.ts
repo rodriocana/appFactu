@@ -10,24 +10,24 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
+  selector: 'app-clientes',
   imports: [CommonModule, NgChartsModule, FormsModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  templateUrl: './clientes.component.html',
+  styleUrls: ['./clientes.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class ClientesComponent implements OnInit {
   Movimiento: Movimiento[] = [];
-  totalImporteFacturas: number = 0;
-  totalImporteFacturasComparison: number = 0;
+  totalImporteFacturas: number = 0; // Total del año actual (2025)
+  comparisonTotals: { [year: number]: number } = {}; // Totales individuales por año
   importe: number = 0;
-  selectedYear: number = 2024;
-  selectedYearComparison: number = 2023;
+  selectedYear: number = 2025; // Año principal fijo en 2025
+  selectedComparisonYears: number[] = []; // Años de comparación adicionales (excluye 2024 por defecto)
   selectedClient: string = '';
-  years: number[] = [2020, 2021, 2022, 2023, 2024, 2025];
+  years: number[] = [2020, 2021, 2022, 2023]; // Excluye 2024 y 2025 (2024 es fijo, 2025 es principal)
   clients: any[] = [];
-  comparisonData: Movimiento[] = [];
+  comparisonData: { [year: number]: Movimiento[] } = {};
   isSidebarOpen = false;
+  defaultComparisonYear: number = 2024; // Año anterior fijo
 
   constructor(
     private movimientosService: MovimientosService,
@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.loadClients();
     this.loadData(this.selectedYear);
-    this.loadComparisonData(this.selectedYearComparison);
+    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
     this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
@@ -50,9 +50,6 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar los clientes:', error);
-      },
-      complete: () => {
-        console.log('Carga de clientes completada');
       }
     });
   }
@@ -70,53 +67,54 @@ export class DashboardComponent implements OnInit {
         return acc + (basebas + imptbas + recbas);
       }, 0);
       this.importe = this.Movimiento.reduce((acc, mov) => acc + parseFloat(mov.BASEBAS), 0);
-      this.updateCharts(); // Actualiza todas las gráficas, incluida la de pastel
+      this.updateCharts();
     });
   }
 
-  loadComparisonData(year: number) {
-    this.movimientosService.getMovimientos(year).subscribe((data: Movimiento[]) => {
-      this.comparisonData = this.selectedClient
-        ? data.filter(mov => mov.CODTER === this.selectedClient)
-        : data;
+  loadComparisonData(years: number[]) {
+    this.comparisonData = {};
+    this.comparisonTotals = {};
 
-      this.totalImporteFacturasComparison = this.comparisonData.reduce((acc, mov) => {
-        const basebas = parseFloat(mov.BASEBAS) || 0;
-        const imptbas = parseFloat(mov.IMPTBAS) || 0;
-        const recbas = parseFloat(mov.RECBAS) || 0;
-        return acc + (basebas + imptbas + recbas);
-      }, 0);
-      this.updateComparisonCharts(); // Actualiza solo líneas y barras, no pastel
+    const loadPromises = years.map(year =>
+      this.movimientosService.getMovimientos(year).toPromise().then((data: Movimiento[] | undefined) => {
+        const filteredData = this.selectedClient
+          ? data?.filter(mov => mov.CODTER === this.selectedClient) || []
+          : data || [];
+        this.comparisonData[year] = filteredData;
+        this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
+          const basebas = parseFloat(mov.BASEBAS) || 0;
+          const imptbas = parseFloat(mov.IMPTBAS) || 0;
+          const recbas = parseFloat(mov.RECBAS) || 0;
+          return acc + (basebas + imptbas + recbas);
+        }, 0);
+      })
+    );
+
+    Promise.all(loadPromises).then(() => {
+      this.updateComparisonCharts();
     });
   }
 
   onClientChange() {
     this.loadData(this.selectedYear);
-    this.loadComparisonData(this.selectedYearComparison);
+    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
   }
 
-  onYearChange() {
-    this.loadData(this.selectedYear);
+  onComparisonYearsChange() {
+    if (this.selectedComparisonYears.length > 4) { // Limita a 4 adicionales + 2024 = 5 total
+      this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 4);
+    }
+    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
   }
 
-  onComparisonYearChange() {
-    this.loadComparisonData(this.selectedYearComparison);
+  getPercentageDifference(year: number): number {
+    const comparisonTotal = this.comparisonTotals[year] || 0;
+    if (comparisonTotal === 0) return 0;
+    const difference = this.totalImporteFacturas - comparisonTotal;
+    return (difference / comparisonTotal) * 100;
   }
 
-  getPercentageDifference(): number {
-    if (this.totalImporteFacturasComparison === 0) return 0;
-    const difference = this.totalImporteFacturas - this.totalImporteFacturasComparison;
-    return (difference / this.totalImporteFacturasComparison) * 100;
-  }
-
-  chartDataLine: ChartData<'line'> = {
-    labels: [],
-    datasets: [
-      { data: [], label: 'Importe facturas por mes (€)', fill: true, tension: 0.1, borderColor: '#3e95cd', backgroundColor: 'rgba(62,149,205,0.4)', pointBackgroundColor: '#3e95cd' },
-      { data: [], label: 'Importe facturas comparación (€)', fill: false, tension: 0.1, borderColor: '#ff5733', backgroundColor: 'rgba(255,87,51,0.4)', pointBackgroundColor: '#ff5733' }
-    ]
-  };
-
+  chartDataLine: ChartData<'line'> = { labels: [], datasets: [] };
   chartOptionsLine: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
@@ -154,7 +152,7 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  chartDataBar: ChartData<'bar'> = { labels: [], datasets: [{ data: [] }] };
+  chartDataBar: ChartData<'bar'> = { labels: [], datasets: [] };
   chartOptionsBar: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
@@ -175,15 +173,12 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  // Actualiza todas las gráficas (incluida la de pastel)
   updateCharts() {
     const importesPorMesPrimary: { [mes: string]: number } = {};
-    const importesPorMesComparison: { [mes: string]: number } = {};
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
     meses.forEach((mes) => {
       importesPorMesPrimary[mes] = 0;
-      importesPorMesComparison[mes] = 0;
     });
 
     this.Movimiento.forEach((mov) => {
@@ -196,66 +191,9 @@ export class DashboardComponent implements OnInit {
       importesPorMesPrimary[mesNombre] += basebas + imptbas + recbas;
     });
 
-    this.comparisonData.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
-      const mes = fecha.getMonth();
-      const mesNombre = meses[mes];
-      const basebas = parseFloat(mov.BASEBAS) || 0;
-      const imptbas = parseFloat(mov.IMPTBAS) || 0;
-      const recbas = parseFloat(mov.RECBAS) || 0;
-      importesPorMesComparison[mesNombre] += basebas + imptbas + recbas;
-    });
-
     const labels = meses;
     const valoresPrimary = Object.values(importesPorMesPrimary);
-    const valoresComparison = Object.values(importesPorMesComparison);
 
-    // Gráfica de líneas
-    this.chartDataLine = {
-      labels: labels,
-      datasets: [
-        { data: valoresPrimary, label: `Importe facturas Año ${this.selectedYear} (€)`, fill: true, tension: 0.1, borderColor: '#3e95cd', backgroundColor: 'rgba(62,149,205,0.4)', pointBackgroundColor: '#3e95cd' },
-        { data: valoresComparison, label: `Importe facturas Año ${this.selectedYearComparison} (€)`, fill: false, tension: 0.1, borderColor: '#ff5733', backgroundColor: 'rgba(255,87,51,0.4)', pointBackgroundColor: '#ff5733' }
-      ]
-    };
-
-    // Gráfica de barras
-    if (this.selectedYear === this.selectedYearComparison) {
-      this.chartDataBar = {
-        labels: labels,
-        datasets: [
-          {
-            label: `Año ${this.selectedYear}`,
-            data: valoresPrimary,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: '#4bc0c0',
-            borderWidth: 1
-          }
-        ]
-      };
-    } else {
-      this.chartDataBar = {
-        labels: labels,
-        datasets: [
-          {
-            label: `Año ${this.selectedYear}`,
-            data: valoresPrimary,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: '#4bc0c0',
-            borderWidth: 1
-          },
-          {
-            label: `Año ${this.selectedYearComparison}`,
-            data: valoresComparison,
-            backgroundColor: 'rgba(255, 87, 51, 0.6)',
-            borderColor: '#ff5733',
-            borderWidth: 1
-          }
-        ]
-      };
-    };
-
-    // Gráfica de pastel (solo año principal)
     this.chartDataPie = {
       labels: labels,
       datasets: [{
@@ -265,17 +203,21 @@ export class DashboardComponent implements OnInit {
         hoverOffset: 10
       }]
     };
+
+    this.updateComparisonCharts();
   }
 
-  // Actualiza solo las gráficas de comparación (líneas y barras)
   updateComparisonCharts() {
     const importesPorMesPrimary: { [mes: string]: number } = {};
-    const importesPorMesComparison: { [mes: string]: number } = {};
+    const importesPorMesComparison: { [year: number]: { [mes: string]: number } } = {};
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
     meses.forEach((mes) => {
       importesPorMesPrimary[mes] = 0;
-      importesPorMesComparison[mes] = 0;
+      [this.defaultComparisonYear, ...this.selectedComparisonYears].forEach(year => {
+        importesPorMesComparison[year] = importesPorMesComparison[year] || {};
+        importesPorMesComparison[year][mes] = 0;
+      });
     });
 
     this.Movimiento.forEach((mov) => {
@@ -288,64 +230,79 @@ export class DashboardComponent implements OnInit {
       importesPorMesPrimary[mesNombre] += basebas + imptbas + recbas;
     });
 
-    this.comparisonData.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
-      const mes = fecha.getMonth();
-      const mesNombre = meses[mes];
-      const basebas = parseFloat(mov.BASEBAS) || 0;
-      const imptbas = parseFloat(mov.IMPTBAS) || 0;
-      const recbas = parseFloat(mov.RECBAS) || 0;
-      importesPorMesComparison[mesNombre] += basebas + imptbas + recbas;
+    [this.defaultComparisonYear, ...this.selectedComparisonYears].forEach(year => {
+      const yearData = this.comparisonData[year] || [];
+      yearData.forEach((mov) => {
+        const fecha = new Date(mov.DOCFEC);
+        const mes = fecha.getMonth();
+        const mesNombre = meses[mes];
+        const basebas = parseFloat(mov.BASEBAS) || 0;
+        const imptbas = parseFloat(mov.IMPTBAS) || 0;
+        const recbas = parseFloat(mov.RECBAS) || 0;
+        importesPorMesComparison[year][mesNombre] += basebas + imptbas + recbas;
+      });
     });
 
     const labels = meses;
     const valoresPrimary = Object.values(importesPorMesPrimary);
-    const valoresComparison = Object.values(importesPorMesComparison);
 
-    // Gráfica de líneas
-    this.chartDataLine = {
-      labels: labels,
-      datasets: [
-        { data: valoresPrimary, label: `Importe facturas Año ${this.selectedYear} (€)`, fill: true, tension: 0.1, borderColor: '#3e95cd', backgroundColor: 'rgba(62,149,205,0.4)', pointBackgroundColor: '#3e95cd' },
-        { data: valoresComparison, label: `Importe facturas Año ${this.selectedYearComparison} (€)`, fill: false, tension: 0.1, borderColor: '#ff5733', backgroundColor: 'rgba(255,87,51,0.4)', pointBackgroundColor: '#ff5733' }
-      ]
-    };
+    const lineDatasets = [
+      {
+        data: valoresPrimary,
+        label: `Año ${this.selectedYear} (€)`,
+        fill: true,
+        tension: 0.1,
+        borderColor: '#3e95cd',
+        backgroundColor: 'rgba(62,149,205,0.4)',
+        pointBackgroundColor: '#3e95cd'
+      },
+      {
+        data: Object.values(importesPorMesComparison[this.defaultComparisonYear]),
+        label: `Año ${this.defaultComparisonYear} (€)`,
+        fill: false,
+        tension: 0.1,
+        borderColor: '#ff5733',
+        backgroundColor: 'rgba(255,87,51,0.4)',
+        pointBackgroundColor: '#ff5733'
+      },
+      ...this.selectedComparisonYears.map((year, index) => ({
+        data: Object.values(importesPorMesComparison[year]),
+        label: `Año ${year} (€)`,
+        fill: false,
+        tension: 0.1,
+        borderColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4],
+        backgroundColor: ['rgba(139,195,74,0.4)', 'rgba(255,206,86,0.4)', 'rgba(153,102,255,0.4)', '#c40c0c'][index % 4],
+        pointBackgroundColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4]
+      }))
+    ];
 
-    // Gráfica de barras
-    if (this.selectedYear === this.selectedYearComparison) {
-      this.chartDataBar = {
-        labels: labels,
-        datasets: [
-          {
-            label: `Año ${this.selectedYear}`,
-            data: valoresPrimary,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: '#4bc0c0',
-            borderWidth: 1
-          }
-        ]
-      };
-    } else {
-      this.chartDataBar = {
-        labels: labels,
-        datasets: [
-          {
-            label: `Año ${this.selectedYear}`,
-            data: valoresPrimary,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: '#4bc0c0',
-            borderWidth: 1
-          },
-          {
-            label: `Año ${this.selectedYearComparison}`,
-            data: valoresComparison,
-            backgroundColor: 'rgba(255, 87, 51, 0.6)',
-            borderColor: '#ff5733',
-            borderWidth: 1
-          }
-        ]
-      };
-    };
+    this.chartDataLine = { labels, datasets: lineDatasets };
+
+    const barDatasets = [
+      {
+        label: `Año ${this.selectedYear}`,
+        data: valoresPrimary,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: '#4bc0c0',
+        borderWidth: 1
+      },
+      {
+        label: `Año ${this.defaultComparisonYear}`,
+        data: Object.values(importesPorMesComparison[this.defaultComparisonYear]),
+        backgroundColor: 'rgba(255, 87, 51, 0.6)',
+        borderColor: '#ff5733',
+        borderWidth: 1
+      },
+      ...this.selectedComparisonYears.map((year, index) => ({
+        label: `Año ${year}`,
+        data: Object.values(importesPorMesComparison[year]),
+        backgroundColor: ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)', '#c40c0c'][index % 4],
+        borderColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4],
+        borderWidth: 1
+      }))
+    ];
+
+    this.chartDataBar = { labels, datasets: barDatasets };
   }
 
   generatePDF() {

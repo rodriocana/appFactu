@@ -14,4 +14,8 @@ export class MovimientosService {
   getMovimientos(year: number): Observable<Movimiento[]> {
     return this.http.get<Movimiento[]>(`${this.apiUrl}?year=${year}`);
   }
+
+  getCodigoCliente(){
+    return this.http.get<any[]>(`http://192.168.210.176:3000/api/codigoCliente`);
+  }
 }

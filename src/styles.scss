@@ -1,5 +1,5 @@
 // Variables de color (sin cambios)
-$primary-color: #5d81a7;
+$primary-color: #2284ee;
 $primary-hover: #0056b3;
 $success-color: #b1ecbf;
 $success-hover: #218838;
@@ -79,7 +79,7 @@ nav.sidebar {
   }
 
   a {
-    color: rgb(48, 40, 40);
+    color:rgb(17 137 167);
     text-decoration: none;
     font-size: 16px;
     margin: 20px 20px 20px 30px;
@@ -100,7 +100,7 @@ nav.sidebar {
     }
 
     &:hover {
-      color: $primary-hover;
+      color: rgb(14, 160, 228);
       transform: scale(1.1);
     }
   }
@@ -195,7 +195,7 @@ nav.topbar {
 main {
   flex: 1;
   margin-left: 320px;
-  margin-top: 72px;
+  margin-top: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
