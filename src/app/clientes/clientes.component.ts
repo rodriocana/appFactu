@@ -17,17 +17,15 @@ import html2canvas from 'html2canvas';
 })
 export class ClientesComponent implements OnInit {
   Movimiento: Movimiento[] = [];
-  totalImporteFacturas: number = 0; // Total del año actual (2025)
+  totalImporteFacturas: number = 0; // Total del año actual
   comparisonTotals: { [year: number]: number } = {}; // Totales individuales por año
   importe: number = 0;
-  selectedYear: number = 2025; // Año principal fijo en 2025
-  selectedComparisonYears: number[] = []; // Años de comparación adicionales (excluye 2024 por defecto)
-  selectedClient: string = '';
-  years: number[] = [2020, 2021, 2022, 2023]; // Excluye 2024 y 2025 (2024 es fijo, 2025 es principal)
-  clients: any[] = [];
+  selectedYear: number = 0; // Inicializamos en 0, se establecerá desde la BD
+  selectedComparisonYears: number[] = []; // Años de comparación adicionales seleccionados
+  years: number[] = []; // Últimos 4 años desde la BD para el selector
   comparisonData: { [year: number]: Movimiento[] } = {};
   isSidebarOpen = false;
-  defaultComparisonYear: number = 2024; // Año anterior fijo
+  defaultComparisonYear: number = 0; // Se establecerá como selectedYear - 1
 
   constructor(
     private movimientosService: MovimientosService,
@@ -35,31 +33,33 @@ export class ClientesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadClients();
-    this.loadData(this.selectedYear);
-    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
+    this.loadAvailableYears(); // Cargar años disponibles al iniciar
     this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
   }
 
-  loadClients() {
-    this.movimientosService.getCodigoCliente().subscribe({
-      next: (data: any[]) => {
-        this.clients = data;
-      },
-      error: (error) => {
-        console.error('Error al cargar los clientes:', error);
-      }
+  loadAvailableYears() {
+    this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
+      // Establecer selectedYear como el año más reciente de la BD
+      this.selectedYear = Math.max(...availableYears); // Ej. 2029 si hay registros en 2029
+      this.defaultComparisonYear = this.selectedYear - 1; // Ej. 2028 si selectedYear es 2029
+
+      // Filtrar los últimos 4 años anteriores a selectedYear - 1 para el selector
+      this.years = availableYears
+        .filter(year => year < this.selectedYear - 1) // Excluir el año actual y el anterior
+        .sort((a, b) => b - a) // Orden descendente
+        .slice(0, 4); // Tomar los 4 más recientes
+
+      this.loadAllData(); // Cargar datos después de tener los años
     });
   }
 
-  loadData(year: number) {
-    this.movimientosService.getMovimientos(year).subscribe((data: Movimiento[]) => {
-      this.Movimiento = this.selectedClient
-        ? data.filter(mov => mov.CODTER === this.selectedClient)
-        : data;
-
+  loadAllData() {
+    const allYears = [this.selectedYear, this.defaultComparisonYear, ...this.selectedComparisonYears];
+    this.movimientosService.getMovimientosMultiple(allYears).subscribe((data: { [year: string]: Movimiento[] }) => {
+      // Año principal (el más reciente, ej. 2029 ahora)
+      this.Movimiento = data[this.selectedYear] || [];
       this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
         const basebas = parseFloat(mov.BASEBAS) || 0;
         const imptbas = parseFloat(mov.IMPTBAS) || 0;
@@ -67,19 +67,12 @@ export class ClientesComponent implements OnInit {
         return acc + (basebas + imptbas + recbas);
       }, 0);
       this.importe = this.Movimiento.reduce((acc, mov) => acc + parseFloat(mov.BASEBAS), 0);
-      this.updateCharts();
-    });
-  }
 
-  loadComparisonData(years: number[]) {
-    this.comparisonData = {};
-    this.comparisonTotals = {};
-
-    const loadPromises = years.map(year =>
-      this.movimientosService.getMovimientos(year).toPromise().then((data: Movimiento[] | undefined) => {
-        const filteredData = this.selectedClient
-          ? data?.filter(mov => mov.CODTER === this.selectedClient) || []
-          : data || [];
+      // Datos de comparación (año anterior + años seleccionados)
+      this.comparisonData = {};
+      this.comparisonTotals = {};
+      [this.defaultComparisonYear, ...this.selectedComparisonYears].forEach(year => {
+        const filteredData = data[year] || [];
         this.comparisonData[year] = filteredData;
         this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
           const basebas = parseFloat(mov.BASEBAS) || 0;
@@ -87,24 +80,17 @@ export class ClientesComponent implements OnInit {
           const recbas = parseFloat(mov.RECBAS) || 0;
           return acc + (basebas + imptbas + recbas);
         }, 0);
-      })
-    );
+      });
 
-    Promise.all(loadPromises).then(() => {
-      this.updateComparisonCharts();
+      this.updateCharts();
     });
   }
 
-  onClientChange() {
-    this.loadData(this.selectedYear);
-    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
-  }
-
   onComparisonYearsChange() {
-    if (this.selectedComparisonYears.length > 4) { // Limita a 4 adicionales + 2024 = 5 total
+    if (this.selectedComparisonYears.length > 4) {
       this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 4);
     }
-    this.loadComparisonData([this.defaultComparisonYear, ...this.selectedComparisonYears]);
+    this.loadAllData();
   }
 
   getPercentageDifference(year: number): number {
@@ -144,8 +130,9 @@ export class ClientesComponent implements OnInit {
         callbacks: {
           label: (context) => {
             const value = context.parsed;
+            const label = context.label || '';
             const formattedValue = value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            return `${formattedValue} €`;
+            return value === 0 ? `${label}: Sin datos` : `${label}: ${formattedValue} €`;
           }
         }
       }
@@ -194,12 +181,21 @@ export class ClientesComponent implements OnInit {
     const labels = meses;
     const valoresPrimary = Object.values(importesPorMesPrimary);
 
+    // Colores para el gráfico pie: gris claro para meses sin datos, colores vivos para meses con datos
+    const coloresBase = [
+      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+      '#C9CBCF', '#8BC34A', '#FF5722', '#03A9F4', '#E91E63', '#CDDC39'
+    ];
+    const backgroundColors = valoresPrimary.map((valor, index) =>
+      valor === 0 ? 'rgba(200, 200, 200, 0.3)' : coloresBase[index]
+    );
+
     this.chartDataPie = {
       labels: labels,
       datasets: [{
         label: `Distribución mensual ${this.selectedYear} (€)`,
         data: valoresPrimary,
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF', '#8BC34A', '#FF5722', '#03A9F4', '#E91E63', '#CDDC39'],
+        backgroundColor: backgroundColors,
         hoverOffset: 10
       }]
     };
@@ -250,7 +246,7 @@ export class ClientesComponent implements OnInit {
       {
         data: valoresPrimary,
         label: `Año ${this.selectedYear} (€)`,
-        fill: true,
+        fill: false,
         tension: 0.1,
         borderColor: '#3e95cd',
         backgroundColor: 'rgba(62,149,205,0.4)',
@@ -270,9 +266,9 @@ export class ClientesComponent implements OnInit {
         label: `Año ${year} (€)`,
         fill: false,
         tension: 0.1,
-        borderColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4],
-        backgroundColor: ['rgba(139,195,74,0.4)', 'rgba(255,206,86,0.4)', 'rgba(153,102,255,0.4)', '#c40c0c'][index % 4],
-        pointBackgroundColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4]
+        borderColor: ['#8BC34A', '#FFCE56', '#9966FF'][index % 3],
+        backgroundColor: ['rgba(139,195,74,0.4)', 'rgba(255,206,86,0.4)', 'rgba(153,102,255,0.4)'][index % 3],
+        pointBackgroundColor: ['#8BC34A', '#FFCE56', '#9966FF'][index % 3]
       }))
     ];
 
@@ -296,8 +292,8 @@ export class ClientesComponent implements OnInit {
       ...this.selectedComparisonYears.map((year, index) => ({
         label: `Año ${year}`,
         data: Object.values(importesPorMesComparison[year]),
-        backgroundColor: ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)', '#c40c0c'][index % 4],
-        borderColor: ['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][index % 4],
+        backgroundColor: ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)'][index % 3],
+        borderColor: ['#8BC34A', '#FFCE56', '#9966FF'][index % 3],
         borderWidth: 1
       }))
     ];

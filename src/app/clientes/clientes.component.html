@@ -1,9 +1,19 @@
+
+<div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
+  <div class="year-selector comparison">
+    <label for="yearSelectComparison">Comparar años anteriores (máx. 4): </label>
+    <select id="yearSelectComparison" multiple [(ngModel)]="selectedComparisonYears" (change)="onComparisonYearsChange()" size="4">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  </div>
+</div>
+
 <div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="card-container">
     <!-- Año actual (2025) -->
     <div class="card-item-actual">
       <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
-      <p>{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+      <p style="color: #1189a7 ;">{{ totalImporteFacturas | number:'1.2-2' }} €</p>
     </div>
     <!-- Año anterior fijo (2024) -->
     <div class="card-item">
@@ -24,14 +34,7 @@
   </div>
 </div>
 
-<div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
-  <div class="year-selector comparison">
-    <label for="yearSelectComparison">Años de comparación adicionales (máx. 4): </label>
-    <select id="yearSelectComparison" multiple [(ngModel)]="selectedComparisonYears" (change)="onComparisonYearsChange()" size="4">
-      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-    </select>
-  </div>
-</div>
+
 
 <div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="pie">
