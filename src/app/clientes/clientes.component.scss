@@ -27,23 +27,23 @@ $cancelled-color: #ca3645;
 
   .card-container {
     display: flex;
-    flex-direction: row; // Horizontal de izquierda a derecha
-    justify-content: flex-start; // Comienza desde la izquierda
-    align-items: center; // Centra verticalmente los elementos
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
     width: 100%;
-    gap: 95px; // Espacio entre cada card-item
-    overflow-x: auto; // Permite scroll horizontal si hay muchos años
-    flex-wrap: nowrap; // Evita que los elementos se envuelvan a la siguiente línea
+    gap: 95px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
   }
 
   .card-item {
     display: flex;
     flex-direction: column;
-    min-width: 150px; // Ancho mínimo para cada bloque
-    text-align: center; // Centra el texto en cada bloque
+    min-width: 150px;
+    text-align: center;
 
     h3 {
-      font-size: 22px; // Tamaño reducido para que quepan más elementos
+      font-size: 22px;
       font-weight: 600;
       color: #333;
       margin-bottom: 5px;
@@ -51,37 +51,37 @@ $cancelled-color: #ca3645;
     }
 
     p {
-      font-size: 18px; // Tamaño ajustado para los valores
+      font-size: 18px;
       font-weight: 700;
       margin: 0;
       font-family: 'Montserrat', sans-serif;
     }
 
     .percentage {
-      font-size: 12px; // Tamaño más pequeño para el porcentaje
+      font-size: 12px;
       font-weight: 500;
       font-family: 'Montserrat', sans-serif;
       margin-top: 5px;
 
       &.positive {
-        color: $paid-color; // Verde para positivo
+        color: $paid-color;
       }
 
       &.negative {
-        color: $cancelled-color; // Rojo para negativo
+        color: $cancelled-color;
       }
     }
   }
 
-  .card-item-actual{
+  .card-item-actual {
     display: flex;
     flex-direction: column;
-    min-width: 150px; // Ancho mínimo para cada bloque
-    text-align: center; // Centra el texto en cada bloque
+    min-width: 150px;
+    text-align: center;
     margin-bottom: 20px;
 
     h3 {
-      font-size: 22px; // Tamaño reducido para que quepan más elementos
+      font-size: 22px;
       font-weight: 600;
       color: #333;
       margin-bottom: 5px;
@@ -89,12 +89,11 @@ $cancelled-color: #ca3645;
     }
 
     p {
-      font-size: 18px; // Tamaño ajustado para los valores
+      font-size: 18px;
       font-weight: 700;
       margin: 0;
       font-family: 'Montserrat', sans-serif;
     }
-
   }
 }
 
@@ -132,14 +131,119 @@ $cancelled-color: #ca3645;
   &.sidebar-open {
     margin-left: -42px;
   }
+
+  .pie-container {
+    background-color: $white;
+    border-top: 4px solid #25a9d9;
+    border-radius: 12px;
+    padding: 20px;
+    width: 470px;
+    box-shadow: 0 4px 8px $shadow-color;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .pie {
+      width: 100%;
+      padding: 0;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+    }
+  }
+
+  .chart-toggle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: $white;
+    border-top: 4px solid #25a9d9;
+    border-radius: 12px;
+    padding: 20px;
+    width: 1006px;
+    box-shadow: 0 4px 8px $shadow-color;
+    transition: all 0.3s ease-in-out;
+
+    .chart-content {
+      width: 100%;
+      display: flex;
+      height: 434px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-chart-button {
+      padding: 8px 16px;
+      background-color: $primary-color;
+      color: $white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Montserrat', sans-serif;
+      align-self: center;
+
+      &:hover {
+        background-color: darken($primary-color, 10%);
+        box-shadow: 0 0 5px rgba(17, 137, 167, 0.5);
+      }
+    }
+  }
 }
 
 .year-selector.comparison {
-  select[multiple] {
-    width: 150px;
-    padding: 5px;
-    border-radius: 4px;
+  label {
+    display: block;
+    margin-bottom: 5px;
   }
+
+  .toggle-label {
+    cursor: pointer;
+    color: #1189a7;
+    font-weight: bold;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.checkbox-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.checkbox-item input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .bar,
@@ -155,6 +259,16 @@ $cancelled-color: #ca3645;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  .chart-toggle-container &,
+  .pie-container & {
+    width: 100%;
+    height: 419px;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
 }
 
 .total-facturas {

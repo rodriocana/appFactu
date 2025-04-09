@@ -1,10 +1,21 @@
-
 <div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="year-selector comparison">
-    <label for="yearSelectComparison">Comparar años anteriores (máx. 4): </label>
-    <select id="yearSelectComparison" multiple [(ngModel)]="selectedComparisonYears" (change)="onComparisonYearsChange()" size="4">
-      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-    </select>
+    <label>
+      <span (click)="toggleCheckboxes()" class="toggle-label">Comparar</span> años anteriores (máx. 4):
+    </label>
+    <div class="checkbox-container" [hidden]="!showCheckboxes" [ngClass]="{'visible': showCheckboxes}">
+      <div *ngFor="let year of years" class="checkbox-item">
+        <input
+          type="checkbox"
+          [id]="'year-' + year"
+          [value]="year"
+          [checked]="selectedComparisonYears.includes(year)"
+          (change)="onCheckboxChange(year, $event)"
+          [disabled]="selectedComparisonYears.length >= 4 && !selectedComparisonYears.includes(year)"
+        >
+        <label [for]="'year-' + year">{{ year }}</label>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -13,7 +24,7 @@
     <!-- Año actual (2025) -->
     <div class="card-item-actual">
       <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
-      <p style="color: #1189a7 ;">{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+      <p style="color: #1189a7;">{{ totalImporteFacturas | number:'1.2-2' }} €</p>
     </div>
     <!-- Año anterior fijo (2024) -->
     <div class="card-item">
@@ -23,28 +34,39 @@
         {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
       </span>
     </div>
+    <div style="display: flex; gap:90px" *ngIf="showCheckboxes">
     <!-- Años de comparación adicionales -->
-    <div class="card-item" *ngFor="let year of selectedComparisonYears; let i = index">
-      <h3><span [style.color]="['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][i % 4]">{{year}}</span></h3>
-      <p [style.color]="['#8BC34A', '#FFCE56', '#9966FF', '#c40c0c'][i % 4]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
+    <div *ngFor="let year of selectedComparisonYears; let i = index" class="card-item">
+      <h3><span [style.color]="['#8BC34A', '#FFCE56', '#9966FF','#635b5b'][i % 4]">{{year}}</span></h3>
+      <p [style.color]="['#8BC34A', '#FFCE56', '#9966FF', '#635b5b'][i % 4]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
       <span class="percentage" [ngClass]="{'positive': getPercentageDifference(year) >= 0, 'negative': getPercentageDifference(year) < 0}">
         {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}% vs {{selectedYear}}
       </span>
     </div>
   </div>
+  </div>
 </div>
 
-
-
 <div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
-  <div class="pie">
-    <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>
+  <!-- Contenedor para la gráfica de pastel (pie) -->
+  <div class="pie-container">
+    <div class="pie">
+      <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>
+    </div>
   </div>
-  <div class="bar">
-    <canvas baseChart [data]="chartDataBar" [options]="chartOptionsBar" [type]="'bar'"></canvas>
-  </div>
-  <div class="line">
-    <canvas baseChart [data]="chartDataLine" [options]="chartOptionsLine" [type]="'line'"></canvas>
+
+  <!-- Contenedor para la gráfica de líneas o barras -->
+  <div class="chart-toggle-container">
+    <div class="chart-content">
+      <canvas baseChart
+      [data]="chartDataGeneral"
+      [options]="isLineChart ? chartOptionsLine : chartOptionsBar"
+      [type]="isLineChart ? 'line' : 'bar'">
+    </canvas>
+    </div>
+    <button (click)="toggleChartType()" class="toggle-chart-button">
+      Cambiar a {{ isLineChart ? 'Barras' : 'Líneas' }}
+    </button>
   </div>
 </div>
 
