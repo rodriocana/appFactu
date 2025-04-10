@@ -1,7 +1,7 @@
 <div class="year-selector-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="year-selector comparison">
     <label>
-      <span (click)="toggleCheckboxes()" class="toggle-label">Comparar</span> años anteriores (máx. 4):
+      <span (click)="toggleCheckboxes()" class="toggle-label"> Comparar </span> años anteriores (máx. 5):
     </label>
     <div class="checkbox-container" [hidden]="!showCheckboxes" [ngClass]="{'visible': showCheckboxes}">
       <div *ngFor="let year of years" class="checkbox-item">
@@ -19,29 +19,36 @@
 
 <div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="card-container">
-    <!-- Año actual (2025) -->
-    <div class="card-item-actual">
-      <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
-      <p style="color: #1189a7; text-align: left;">{{ totalImporteFacturas | number:'1.2-2' }} €</p>
-    </div>
-    <!-- Año anterior fijo (2024) -->
-    <div class="card-item">
-      <h3><span style="color: #ff5733;">{{defaultComparisonYear}}</span></h3>
-      <p style="color: #ff5733;">{{ comparisonTotals[defaultComparisonYear] | number:'1.2-2' }} €</p>
-      <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
-        {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
-      </span>
-    </div>
-    <!-- Años de comparación adicionales -->
-    <div style="display: flex; gap:45px" *ngIf="showCheckboxes">
-      <div *ngFor="let year of selectedComparisonYears; let i = index" class="card-item">
-        <h3><span [style.color]="['#FFCE56', '#a887ed', '#635b5b','#a7db6b', '#11adc2'][i % 5]">{{year}}</span></h3>
-        <p [style.color]="['#FFCE56', '#a887ed', '#635b5b', '#a7db6b', '#11adc2'][i % 5]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
-        <span class="percentage" [ngClass]="{'positive': getPercentageDifference(year) >= 0, 'negative': getPercentageDifference(year) < 0}">
-          {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}% vs {{selectedYear}}
+    <!-- Vista inicial (sin checkboxes activados) -->
+    <ng-container *ngIf="!showCheckboxes">
+      <!-- Año actual (2025) -->
+      <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes }">
+        <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
+        <p style="color: #1189a7; text-align: left;">{{ totalImporteFacturas | number:'1.2-2' }} €</p>
+      </div>
+
+      <!-- Año anterior fijo (2024) -->
+      <div class="card-item" [ngClass]="{ 'visible': !showCheckboxes }">
+        <h3>Total Facturas <span style="color: #ff5733;">{{defaultComparisonYear}}</span></h3>
+        <p style="color: #ff5733;">{{ comparisonTotals[defaultComparisonYear] | number:'1.2-2' }} €</p>
+        <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
+          {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
         </span>
       </div>
-    </div>
+    </ng-container>
+
+    <!-- Vista con checkboxes activados -->
+    <ng-container *ngIf="showCheckboxes">
+      <div style="display: flex; gap: 174px;">
+        <div *ngFor="let year of sortedComparisonYears; let i = index" class="card-item-comparativa">
+          <h3><span [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{year}}</span></h3>
+          <p [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
+          <span class="percentage" [ngClass]="{'positive': getPercentageDifference(year) >= 0, 'negative': getPercentageDifference(year) < 0}" *ngIf="year !== mostRecentYear">
+            {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}% vs {{mostRecentYear}}
+          </span>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>
 
