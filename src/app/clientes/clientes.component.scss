@@ -42,7 +42,7 @@ $cancelled-color: #ca3645;
       text-align: center;
       opacity: 0; /* Comienza oculto */
       transform: translateX(-50px); /* Comienza desplazado a la izquierda */
-      animation: fadeInUp 0.5s ease-out forwards;
+      animation: fadeInUp 0.9s ease-out forwards;
 
       &:nth-child(even) {
         animation-delay: 0.2s;
@@ -105,9 +105,9 @@ $cancelled-color: #ca3645;
     flex-direction: column;
     min-width: 150px;
     transform: translate(20px, 0px);
-    text-align: center;
+    text-align: left;
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(50px);
     animation: fadeInUp 0.2s ease-out forwards;
 
 
@@ -147,6 +147,39 @@ $cancelled-color: #ca3645;
     }
   }
 
+    .card-item-actual {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    text-align: center;
+    margin-bottom: 23px;
+    opacity: 0;
+    transform: translateX(50px);
+    animation: fadeInUp 2.9s ease-out forwards;
+
+
+    &.visible {
+      animation: fadeInUp 0.6s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    p {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+  }
+}
+
   .card-item-center {
     display: flex;
     flex-direction: column;
@@ -185,38 +218,7 @@ $cancelled-color: #ca3645;
     }
   }
 
-  .card-item-actual {
-    display: flex;
-    flex-direction: column;
-    min-width: 150px;
-    text-align: center;
-    margin-bottom: 20px;
-    opacity: 0;
-    transform: translateX(-50px);
-    animation: fadeInUp 0.2s ease-out forwards;
 
-
-    &.visible {
-      animation: fadeInUp 0.4s ease-out forwards;
-      animation-delay: 0.1s;
-    }
-
-    h3 {
-      font-size: 25px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    p {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-    }
-  }
-}
 .client-selector {
   margin: 10px;
   select {

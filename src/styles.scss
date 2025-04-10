@@ -214,3 +214,48 @@ hr {
   transition: width 0.1s ease; // Corregí "0.1sease" a "0.1s ease"
   margin-bottom: 30px;
 }
+
+
+.search-container {
+  width: 100%;
+  padding: 0 10px;
+  margin: 10px 0;
+  position: relative;
+  max-width: 150px; // Ajustado para no exceder el ancho del sidebar (170px - padding)
+
+  .codter-search {
+    width: 85%;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    font-family: 'Montserrat', sans-serif;
+    color: rgb(17, 137, 167);
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 5px rgba(34, 132, 238, 0.3);
+    }
+
+    &::placeholder {
+      color: #919191;
+      opacity: 0.7;
+    }
+  }
+}
+
+// Estilos para el autocomplete
+::ng-deep .mat-autocomplete-panel {
+  max-width: 150px !important;
+  font-family: 'Montserrat', sans-serif;
+
+  .mat-option {
+    font-size: 14px;
+    color: rgb(17, 137, 167);
+
+    &:hover {
+      background-color: rgba(34, 132, 238, 0.1);
+    }
+  }
+}

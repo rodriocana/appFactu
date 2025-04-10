@@ -1,20 +1,11 @@
-<!-- Barra superior -->
-<nav class="topbar" [class.open]="isSidebarOpen">
-  <div class="texto-container" [class.open]="isSidebarOpen">
-    <a href="#"><i class="fas fa-cog"></i> Configuración</a>
-    <a href="#"><i class="fas fa-sign-out-alt"></i> Salir</a>
-  </div>
-</nav>
-
 <!-- Barra lateral -->
 <nav class="sidebar" [class.open]="isSidebarOpen">
   <img [src]="'assets/logoinfocon.ico'"
        alt="Logo"
        class="logo"
        [ngClass]="{'small-logo': !isSidebarOpen}" />
-       <hr>
+  <hr>
 
-  <!-- <h2 class="h2-menu">FACTURAS</h2> -->
   <a [routerLink]="'/invoices'" title="Lista de Facturas">
     <i class="fas fa-file-invoice"></i>
     <span *ngIf="isSidebarOpen">Facturas</span>
@@ -28,6 +19,23 @@
     <span *ngIf="isSidebarOpen">Clientes</span>
   </a>
 
+<!-- Buscador de codter: solo aparece si showSearch es true -->
+<div class="search-container" *ngIf="showSearch && isSidebarOpen">
+  <input type="text"
+         placeholder="Buscar codter..."
+         [(ngModel)]="searchCodter"
+         (input)="onSearchCodter()"
+          (keydown.enter)="onCodterSelected(searchCodter)"
+         class="codter-search">
+  <div class="autocomplete-dropdown" style="padding: 10px;width: 37px;cursor: pointer;" *ngIf="filteredCodters.length > 0 && searchCodter">
+    <div *ngFor="let codter of filteredCodters"
+         (click)="onCodterSelected(codter)"
+         class="autocomplete-item">
+      {{codter}}
+    </div>
+  </div>
+</div>
+
   <button class="toggle-btn" (click)="toggleSidebar()">
     <i class="fas" [ngClass]="isSidebarOpen ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
   </button>
@@ -37,4 +45,3 @@
 <main>
   <router-outlet></router-outlet>
 </main>
-

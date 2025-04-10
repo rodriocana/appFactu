@@ -49,11 +49,18 @@ export class ClientesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.codigoCliente = this.route.snapshot.paramMap.get('codigo') || '';
     this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
-    this.loadAvailableYears();
+
+    // Suscribirse a los cambios en los parámetros de la ruta
+    this.route.paramMap.subscribe(params => {
+      const codigo = params.get('codigo');
+      if (codigo && codigo !== this.codigoCliente) {
+        this.codigoCliente = codigo;
+        this.loadAvailableYears(); // Recargar datos cuando cambie el código
+      }
+    });
   }
 
   toggleCheckboxes() {
@@ -73,8 +80,8 @@ export class ClientesComponent implements OnInit {
 
   loadAvailableYears() {
     this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
-      this.selectedYear = this.AñoActual.getFullYear(); // 2025 por defecto
-      this.defaultComparisonYear = this.selectedYear - 1; // 2024 por defecto
+      this.selectedYear = this.AñoActual.getFullYear(); // año del sistema
+      this.defaultComparisonYear = this.selectedYear - 1; // año del sistema - 1
 
       this.years = availableYears
         .filter(year => year <= this.selectedYear)
@@ -83,6 +90,7 @@ export class ClientesComponent implements OnInit {
 
       this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear];
       this.pieChartYear = this.selectedYear;
+
 
       this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe(
         (data: { [year: string]: Movimiento[] }) => {
