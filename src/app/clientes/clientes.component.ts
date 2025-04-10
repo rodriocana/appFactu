@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router'; // Añadido para obtener el parámetro de la ruta
 import { MovimientosService } from '../movimientosService.service';
 import { Movimiento } from '../models/movimiento.model';
 import { CommonModule } from '@angular/common';
@@ -27,26 +28,32 @@ export class ClientesComponent implements OnInit {
   isSidebarOpen = false;
   defaultComparisonYear: number = 0;
   showCheckboxes: boolean = false;
-  AñoActual: Date = new Date(); // Año actual
+  AñoActual: Date = new Date();
   chartDataGeneral: ChartData<'line' | 'bar'> = { labels: [], datasets: [] };
-
-  isLineChart = true; // Comienza con la gráfica de líneas
+  isLineChart = true;
+  codigoCliente: string = ''; // Añadido para almacenar el código del cliente
 
   constructor(
     private movimientosService: MovimientosService,
-    private sidebarService: SidebarService
+    private sidebarService: SidebarService,
+    private route: ActivatedRoute // Añadido para leer el parámetro de la ruta
   ) {}
 
   ngOnInit() {
-    this.loadAvailableYears();
+    this.codigoCliente = this.route.snapshot.paramMap.get('codigo') || '';
     this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
+    this.loadAvailableYears();
   }
 
   toggleCheckboxes() {
     this.showCheckboxes = !this.showCheckboxes;
-    this.loadAllData(); // Cargar datos cada vez que se alterna la visibilidad de los checkboxes
+    if (this.showCheckboxes) {
+      // Reiniciar los años seleccionados adicionales al abrir los checkboxes
+      this.selectedComparisonYears = [];
+    }
+    this.loadAllData(); // Recargar datos con los años por defecto
   }
 
   toggleChartType(): void {
@@ -56,38 +63,31 @@ export class ClientesComponent implements OnInit {
 
   loadAvailableYears() {
     this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
-      this.selectedYear = this.AñoActual.getFullYear(); // Usar el año actual
-      this.defaultComparisonYear = this.selectedYear - 1;
-
+      this.selectedYear = this.AñoActual.getFullYear(); // Año actual (2025)
+      this.defaultComparisonYear = this.selectedYear - 1; // Año anterior (2024)
       this.years = availableYears
-        .filter(year => year < this.selectedYear - 1)
+        .filter(year => year < this.defaultComparisonYear)
         .sort((a, b) => b - a)
-        .slice(0, 5);
+        .slice(0, 15); // Últimos 5 años disponibles antes de 2024
 
-      const allYears = [this.selectedYear, this.defaultComparisonYear];
-      this.movimientosService.getMovimientosMultiple(allYears).subscribe((data: { [year: string]: Movimiento[] }) => {
-        this.Movimiento = data[this.selectedYear] || [];
-        this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
-          const basebas = parseFloat(mov.BASEBAS) || 0;
-          const imptbas = parseFloat(mov.IMPTBAS) || 0;
-          const recbas = parseFloat(mov.RECBAS) || 0;
-          return acc + (basebas + imptbas + recbas);
-        }, 0);
-        this.importe = this.Movimiento.reduce((acc, mov) => acc + parseFloat(mov.BASEBAS), 0);
+      // Cargar datos iniciales solo para selectedYear para la gráfica de pastel
+      this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe(
+        (data: { [year: string]: Movimiento[] }) => {
+          this.Movimiento = data[this.selectedYear] || [];
+          this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
+            const basebas = parseFloat(mov.BASEBAS) || 0;
+            const imptbas = parseFloat(mov.IMPTBAS) || 0;
+            const recbas = parseFloat(mov.RECBAS) || 0;
+            return acc + (basebas + imptbas + recbas);
+          }, 0);
+          this.updatePieChart(); // Configurar la gráfica de pastel una vez
+        },
+        (error) => {
+          console.error('Error al cargar datos iniciales del pastel:', error);
+        }
+      );
 
-        this.comparisonData = {};
-        this.comparisonTotals = {};
-        this.comparisonData[this.defaultComparisonYear] = data[this.defaultComparisonYear] || [];
-        this.comparisonTotals[this.defaultComparisonYear] = this.comparisonData[this.defaultComparisonYear].reduce((acc, mov) => {
-          const basebas = parseFloat(mov.BASEBAS) || 0;
-          const imptbas = parseFloat(mov.IMPTBAS) || 0;
-          const recbas = parseFloat(mov.RECBAS) || 0;
-          return acc + (basebas + imptbas + recbas);
-        }, 0);
-
-        this.updatePieChart(); // Actualizar gráfica de pastel
-        this.updateComparisonCharts(); // Actualizar gráfica de líneas/barras
-      });
+      this.loadAllData(); // Cargar datos iniciales para las gráficas comparativas
     });
   }
 
@@ -95,56 +95,64 @@ export class ClientesComponent implements OnInit {
     const isChecked = (event.target as HTMLInputElement).checked;
 
     if (isChecked) {
-      if (this.selectedComparisonYears.length < 4 && !this.selectedComparisonYears.includes(year)) {
+      if (this.selectedComparisonYears.length < 5 && !this.selectedComparisonYears.includes(year)) {
         this.selectedComparisonYears.push(year);
       }
     } else {
       this.selectedComparisonYears = this.selectedComparisonYears.filter(y => y !== year);
     }
 
-    if (this.showCheckboxes) {
-      this.loadAllData();
-    }
+    this.loadAllData(); // Recargar datos cada vez que cambie un checkbox
   }
 
   loadAllData() {
-    let comparisonYears = [this.defaultComparisonYear]; // Siempre incluir el año anterior por defecto
+    let comparisonYears = [this.defaultComparisonYear];
     if (this.showCheckboxes) {
-      comparisonYears = [...comparisonYears, ...this.selectedComparisonYears]; // Incluir años seleccionados solo si los checkboxes están visibles
+      comparisonYears = [...comparisonYears, ...this.selectedComparisonYears];
     }
 
     const allYears = [this.selectedYear, ...comparisonYears];
 
-    this.movimientosService.getMovimientosMultiple(allYears).subscribe((data: { [year: string]: Movimiento[] }) => {
-      this.Movimiento = data[this.selectedYear] || [];
-      this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
-        const basebas = parseFloat(mov.BASEBAS) || 0;
-        const imptbas = parseFloat(mov.IMPTBAS) || 0;
-        const recbas = parseFloat(mov.RECBAS) || 0;
-        return acc + (basebas + imptbas + recbas);
-      }, 0);
 
-      this.comparisonData = {};
-      this.comparisonTotals = {};
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, allYears).subscribe(
+      (data: { [year: string]: Movimiento[] }) => {
 
-      comparisonYears.forEach(year => {
-        const filteredData = data[year] || [];
-        this.comparisonData[year] = filteredData;
-        this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
-          const basebas = parseFloat(mov.BASEBAS) || 0;
-          const imptbas = parseFloat(mov.IMPTBAS) || 0;
-          const recbas = parseFloat(mov.RECBAS) || 0;
-          return acc + (basebas + imptbas + recbas);
-        }, 0);
-      });
+        // No sobrescribimos this.Movimiento aquí para mantener la gráfica de pastel fija
+        this.comparisonData = {};
+        this.comparisonTotals = {};
 
-      this.updateComparisonCharts();
-    });
+        comparisonYears.forEach(year => {
+          const filteredData = data[year] || [];
+          this.comparisonData[year] = filteredData;
+          this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
+            const basebas = parseFloat(mov.BASEBAS) || 0;
+            const imptbas = parseFloat(mov.IMPTBAS) || 0;
+            const recbas = parseFloat(mov.RECBAS) || 0;
+            return acc + (basebas + imptbas + recbas);
+          }, 0);
+        });
+
+        // Actualizar totalImporteFacturas solo si no se ha calculado antes
+        if (this.totalImporteFacturas === 0) {
+          this.totalImporteFacturas = (data[this.selectedYear] || []).reduce((acc, mov) => {
+            const basebas = parseFloat(mov.BASEBAS) || 0;
+            const imptbas = parseFloat(mov.IMPTBAS) || 0;
+            const recbas = parseFloat(mov.RECBAS) || 0;
+            return acc + (basebas + imptbas + recbas);
+          }, 0);
+        }
+
+        this.updateCharts();
+      },
+      (error) => {
+        console.error('Error al cargar datos:', error);
+      }
+    );
   }
 
   onComparisonYearsChange() {
-    if (this.selectedComparisonYears.length > 4) {
-      this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 4);
+    if (this.selectedComparisonYears.length > 5) {
+      this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 5);
     }
     this.loadAllData();
   }
@@ -171,7 +179,7 @@ export class ClientesComponent implements OnInit {
           }
         }
       },
-      title: { display: true, text: 'Comparativa por Años', font: { size: 16 }, padding: { top: 25, bottom: 10 } }
+      title: { display: true, text: `Comparativa por Años - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } }
     },
     scales: {
       x: {},
@@ -194,7 +202,10 @@ export class ClientesComponent implements OnInit {
           }
         }
       },
-      title: { display: true, text: 'Total mensual', font: { size: 16 }, padding: { top: 0, bottom: 20 } }
+      title: { display: true, text: `Total mensual - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 0, bottom: 14 } }
+    },
+    layout: {
+      padding: 7
     }
   };
 
@@ -203,7 +214,7 @@ export class ClientesComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      title: { display: true, text: 'Comparativa por Años', font: { size: 16 }, padding: { top: 25, bottom: 10 } },
+      title: { display: true, text: `Comparativa por Años - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } },
       tooltip: {
         callbacks: {
           label: (context) => {
@@ -221,7 +232,6 @@ export class ClientesComponent implements OnInit {
   };
 
   updateCharts() {
-    this.updatePieChart();
     this.updateComparisonCharts();
   }
 
@@ -272,6 +282,7 @@ export class ClientesComponent implements OnInit {
 
     meses.forEach((mes) => {
       importesPorMesPrimary[mes] = 0;
+      // Solo incluir defaultComparisonYear por defecto, y selectedComparisonYears si showCheckboxes es true
       const yearsToShow = this.showCheckboxes ? [this.defaultComparisonYear, ...this.selectedComparisonYears] : [this.defaultComparisonYear];
       yearsToShow.forEach(year => {
         importesPorMesComparison[year] = importesPorMesComparison[year] || {};
@@ -321,9 +332,9 @@ export class ClientesComponent implements OnInit {
         label: `Año ${year} (€)`,
         fill: false,
         tension: 0.1,
-        borderColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b'][index % 4],
-        backgroundColor: year === this.defaultComparisonYear ? 'rgba(255,87,51,0.4)' : ['rgba(139,195,74,0.4)', 'rgba(255,206,86,0.4)', 'rgba(153,102,255,0.4)', '#635b5b'][index % 4],
-        pointBackgroundColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b'][index % 4]
+        borderColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b','#11adc2'][index % 5],
+        backgroundColor: year === this.defaultComparisonYear ? 'rgba(255, 87, 51, 0.6)' : ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(85, 79, 79, 0.53)','rgba(17, 173, 194, 0.54)','#a7db6b', ][index % 6],
+        pointBackgroundColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b', '#a7db6b','#11adc2' ][index % 6],
       }))
     ];
 
@@ -333,15 +344,15 @@ export class ClientesComponent implements OnInit {
       {
         label: `Año ${this.selectedYear}`,
         data: valoresPrimary,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        backgroundColor: '#1189a7b2',
         borderColor: '#4bc0c0',
         borderWidth: 1
       },
       ...yearsToShow.map((year, index) => ({
         label: `Año ${year}`,
         data: Object.values(importesPorMesComparison[year]),
-        backgroundColor: year === this.defaultComparisonYear ? 'rgba(255, 87, 51, 0.6)' : ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)', '#635b5b'][index % 4],
-        borderColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b'][index % 4],
+        backgroundColor: year === this.defaultComparisonYear ? 'rgba(255, 87, 51, 0.6)' : ['rgba(139, 195, 74, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)', '#635b5b', '#a7db6b', '#11adc2'][index % 6],
+        borderColor: year === this.defaultComparisonYear ? '#ff5733' : ['#8BC34A', '#FFCE56', '#9966FF', '#635b5b', '#a7db6b','#11adc2' ][index % 6],
         borderWidth: 1
       }))
     ];
@@ -353,19 +364,38 @@ export class ClientesComponent implements OnInit {
   generatePDF() {
     const doc = new jsPDF('p', 'mm', 'a4');
     const charts = document.querySelectorAll<HTMLElement>('.pie-container, .chart-toggle-container, .info-card');
-    let yPosition = 10;
+    let yPosition = 20;
     const margin = 10;
+    const pageWidth = 210;
+    const pageHeight = 297;
 
-    const promises = Array.from(charts).map((chartElement) => {
-      return html2canvas(chartElement, { scale: 3 }).then((canvas) => {
+    // Función para agregar fondo y encabezado
+    const addBackgroundAndHeader = () => {
+      doc.setFillColor(237,244, 245); // Azul muy claro, puedes cambiarlo a lo que quieras
+      doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40);
+      doc.text(`Reporte de Gráficas - Cliente: ${this.codigoCliente}`, 105, 10, { align: 'center' });
+    };
+
+    // Primera página
+    addBackgroundAndHeader();
+
+    const promises = Array.from(charts).map((chartElement, index) => {
+      return html2canvas(chartElement, { scale: 4 }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 80;
+
+        const isFirst = index === 0;
+        const imgWidth = isFirst ? 180 : 100;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        const xPosition = (210 - imgWidth) / 2;
+        const xPosition = (pageWidth - imgWidth) / 2;
 
         if (yPosition + imgHeight > 277) {
           doc.addPage();
-          yPosition = 10;
+          addBackgroundAndHeader();
+          yPosition = 20;
         }
 
         doc.addImage(imgData, 'PNG', xPosition, yPosition, imgWidth, imgHeight);
@@ -374,7 +404,7 @@ export class ClientesComponent implements OnInit {
     });
 
     Promise.all(promises).then(() => {
-      doc.save('dashboard_charts.pdf');
+      doc.save(`cliente_${this.codigoCliente}_charts.pdf`);
     }).catch((error) => {
       console.error('Error generando el PDF:', error);
     });

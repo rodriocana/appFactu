@@ -9,8 +9,8 @@ export const routes: Routes = [
   { path: 'invoices', component: InvoicesListComponent },
   { path: 'create-invoice', component: InvoiceFormComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'clientes', component: ClientesComponent }
-  // { path: 'clients/:codigo', component: ClientesComponent },
+  // { path: 'clientes', component: ClientesComponent }
+  { path: 'clientes/:codigo', component: ClientesComponent },
 
 
 ];

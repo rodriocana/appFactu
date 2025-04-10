@@ -115,7 +115,7 @@ app.get('/api/years', (req, res) => {
         FROM movalmc
         WHERE DOCFEC IS NOT NULL
     		ORDER BY year DESC
-         LIMIT 6
+
       `;
 
       conn.query(query)
@@ -171,34 +171,79 @@ app.get('/api/codigoCliente', (req, res) => {
     });
 });
 
+
+// IMPORTANTE, se usa esta api para sacar los datos de cada cliente por fecha
 app.get('/api/movimientos/cliente/:codigo', (req, res) => {
   const codigo = req.params.codigo;
-  const year = req.query.year || '2024'; // Puedes hacerlo dinámico si lo necesitas
-  const startDate = `${year}-01-01`;
-  const endDate = `${year}-12-31`;
 
-  pool.getConnection()
-    .then(conn => {
-      const query = `
-        SELECT CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS
-        FROM movalmc
-        WHERE CODTER = ? AND DOCFEC BETWEEN ? AND ?
-      `;
+  if (req.query.years) {
+    const years = req.query.years.split(',').map(year => year.trim());
+    const conditions = years.map(year => `DOCFEC BETWEEN '${year}-01-01' AND '${year}-12-31'`).join(' OR ');
 
-      conn.query(query, [codigo, startDate, endDate])
-        .then(rows => {
-          res.json(rows);
-        })
-        .catch(err => {
-          console.error('Error en la consulta:', err);
-          res.status(500).json({ error: 'Error al obtener los datos del cliente' });
-        })
-        .finally(() => conn.end());
-    })
-    .catch(err => {
-      console.error('Error de conexión:', err);
-      res.status(500).json({ error: 'Error de conexión a la base de datos' });
-    });
+    pool.getConnection()
+      .then(conn => {
+        const query = `
+          SELECT CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS,
+          YEAR(DOCFEC) AS year
+          FROM movalmc
+          WHERE CODTER = ? AND (${conditions})
+        `;
+
+        console.log('Consulta SQL:', query.replace('?', `'${codigo}'`));
+        conn.query(query, [codigo])
+          .then(rows => {
+            const groupedByYear = rows.reduce((acc, row) => {
+              const year = row.year;
+              if (!acc[year]) acc[year] = [];
+              acc[year].push({
+                CODTER: row.CODTER,
+                DOCFEC: row.DOCFEC,
+                BASEBAS: row.BASEBAS,
+                IMPTBAS: row.IMPTBAS,
+                RECBAS: row.RECBAS
+              });
+              return acc;
+            }, {});
+            res.json(groupedByYear);
+          })
+          .catch(err => {
+            console.error('Error en la consulta:', err);
+            res.status(500).json({ error: 'Error al obtener los datos del cliente' });
+          })
+          .finally(() => conn.end());
+      })
+      .catch(err => {
+        console.error('Error de conexión:', err);
+        res.status(500).json({ error: 'Error de conexión a la base de datos' });
+      });
+  } else {
+    const year = req.query.year || '2024';
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    pool.getConnection()
+      .then(conn => {
+        const query = `
+          SELECT CODTER, DOCFEC, BASEBAS, IMPTBAS, RECBAS
+          FROM movalmc
+          WHERE CODTER = ? AND DOCFEC BETWEEN ? AND ?
+        `;
+
+        conn.query(query, [codigo, startDate, endDate])
+          .then(rows => {
+            res.json(rows); // Devuelve array plano para ?year=
+          })
+          .catch(err => {
+            console.error('Error en la consulta:', err);
+            res.status(500).json({ error: 'Error al obtener los datos del cliente' });
+          })
+          .finally(() => conn.end());
+      })
+      .catch(err => {
+        console.error('Error de conexión:', err);
+        res.status(500).json({ error: 'Error de conexión a la base de datos' });
+      });
+  }
 });
 
 // Iniciar el servidor
