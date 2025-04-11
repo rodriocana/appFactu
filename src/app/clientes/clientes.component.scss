@@ -12,6 +12,7 @@ $cancelled-color: #ca3645;
 .info-card {
   background-color: $white;
   border-top: 4px solid #1189a7;
+  border-bottom: 4px solid #1189a7;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
@@ -257,6 +258,7 @@ $cancelled-color: #ca3645;
   .pie-container {
     background-color: $white;
     border-top: 4px solid #1189a7;
+    border-bottom: 4px solid #1189a7;
     border-radius: 12px;
     padding: 20px;
     width: 470px;
@@ -336,7 +338,7 @@ $cancelled-color: #ca3645;
   padding: 10px;
   opacity: 0;
   transform: translateX(-20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 1.1s ease, transform 1.1s ease;
 
   // When hidden (showCheckboxes = false)
   &[hidden] {
@@ -388,6 +390,7 @@ $cancelled-color: #ca3645;
 .pie {
   background-color: $white;
   border-top: 4px solid #25a9d9;
+  border-bottom: 4px solid #1189a7;
   border-radius: 12px;
   padding: 20px;
   width: 470px;

@@ -1,3 +1,19 @@
+<!-- top bar -->
+<nav class="topbar" [class.open]="isSidebarOpen">
+  <div class="texto-container">
+    <a [routerLink]="'/configuracion'" title="Configuración">
+      <i class="fas fa-sliders-h"></i>
+      <span>Configuración</span>
+    </a>
+
+    <a  title="Salir">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Salir</span>
+    </a>
+  </div>
+</nav>
+
+
 <!-- Barra lateral -->
 <nav class="sidebar" [class.open]="isSidebarOpen">
   <img [src]="'assets/logoinfocon.ico'"

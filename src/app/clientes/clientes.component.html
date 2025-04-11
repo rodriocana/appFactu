@@ -34,17 +34,25 @@
         <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
           {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
         </span>
+
       </div>
     </ng-container>
 
     <!-- Vista con checkboxes activados -->
     <ng-container *ngIf="showCheckboxes">
-      <div style="display: flex; gap: 174px;">
+      <div style="display: flex; gap: 162px;">
         <div *ngFor="let year of sortedComparisonYears; let i = index" class="card-item-comparativa">
-          <h3><span [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{year}}</span></h3>
+          <h3><span *ngIf="year === mostRecentYear" style="font-size: 0.8em; color: #089add;">Actual </span><span [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{ year }}
+              <!-- Agregar "Actual" si el año es el seleccionado -->
+
+            </span>
+          </h3>
           <p [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{ comparisonTotals[year] | number:'1.2-2' }} €</p>
+          <span class="difference" style="margin-top: 10px;" [ngClass]="{'positive': getAmountDifference(year) >= 0, 'negative': getAmountDifference(year) < 0}" *ngIf="year !== mostRecentYear">
+            {{ getAmountDifference(year) >= 0 ? '+' : '' }}{{ getAmountDifference(year) | number:'1.2-2' }} € vs {{mostRecentYear}}
+          </span>
           <span class="percentage" [ngClass]="{'positive': getPercentageDifference(year) >= 0, 'negative': getPercentageDifference(year) < 0}" *ngIf="year !== mostRecentYear">
-            {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}% vs {{mostRecentYear}}
+            {{ getPercentageDifference(year) >= 0 ? '+' : '' }}{{ getPercentageDifference(year) | number:'1.2-2' }}%
           </span>
         </div>
       </div>

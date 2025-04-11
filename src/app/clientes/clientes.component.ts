@@ -40,6 +40,7 @@ export class ClientesComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  // en este getter devolvemos los años de comparacion ordenados de mayor a menor
   get sortedComparisonYears(): number[] {
     return [...this.selectedComparisonYears].sort((a, b) => b - a);
   }
@@ -204,6 +205,14 @@ export class ClientesComponent implements OnInit {
     return (difference / baseTotal) * 100;
   }
 
+  getAmountDifference(year: number): number {
+    const baseTotal = this.comparisonTotals[this.mostRecentYear] || 0;
+    const comparisonTotal = this.comparisonTotals[year] || 0;
+    return comparisonTotal - baseTotal;
+  }
+
+
+
   chartDataLine: ChartData<'line'> = { labels: [], datasets: [] };
   chartOptionsLine: ChartConfiguration['options'] = {
     responsive: true,
@@ -304,8 +313,8 @@ export class ClientesComponent implements OnInit {
     const valoresPrimary = Object.values(importesPorMesPrimary);
 
     const coloresBase = [
-      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-      '#C9CBCF', '#8BC34A', '#FF5722', '#03A9F4', '#E91E63', '#CDDC39'
+      '#FF6384', '#91c7eb', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+      '#94faff', '#8BC34A', '#FF5722', '#03A9F4', '#E91E63', '#CDDC39'
     ];
     const backgroundColors = valoresPrimary.map((valor, index) =>
       valor === 0 ? 'rgba(200, 200, 200, 0.3)' : coloresBase[index]
