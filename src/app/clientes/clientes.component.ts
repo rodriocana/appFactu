@@ -32,6 +32,7 @@ export class ClientesComponent implements OnInit {
   codigoCliente: string = '';
   defaultComparisonYear: number = 0; // Año anterior fijo (2024 por defecto)
   pieChartYear: number = 0; // Año actualmente mostrado en el gráfico de pastel
+  isLoading: boolean = false;
 
   constructor(
     private movimientosService: MovimientosService,
@@ -79,9 +80,10 @@ export class ClientesComponent implements OnInit {
   }
 
   loadAvailableYears() {
+    this.isLoading = true; // Activar "Cargando"
     this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
-      this.selectedYear = this.AñoActual.getFullYear(); // año del sistema
-      this.defaultComparisonYear = this.selectedYear - 1; // año del sistema - 1
+      this.selectedYear = this.AñoActual.getFullYear();
+      this.defaultComparisonYear = this.selectedYear - 1;
 
       this.years = availableYears
         .filter(year => year <= this.selectedYear)
@@ -91,20 +93,19 @@ export class ClientesComponent implements OnInit {
       this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear];
       this.pieChartYear = this.selectedYear;
 
-
       this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe(
         (data: { [year: string]: Movimiento[] }) => {
           this.Movimiento = data[this.selectedYear] || [];
           this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
             const basebas = parseFloat(mov.BASEBAS) || 0;
-            const imptbas = parseFloat(mov.IMPTBAS) || 0;
-            const recbas = parseFloat(mov.RECBAS) || 0;
-            return acc + (basebas);
+            return acc + basebas;
           }, 0);
           this.updatePieChart();
+          this.isLoading = false; // Desactivar "Cargando"
         },
         (error) => {
           console.error('Error al cargar datos iniciales del pastel:', error);
+          this.isLoading = false; // Desactivar en caso de error
         }
       );
 
@@ -147,18 +148,22 @@ export class ClientesComponent implements OnInit {
 
   // Nueva función para actualizar el gráfico después de cargar los datos
   updatePieChartAfterDataLoad(year: number) {
+    this.isLoading = true; // Activar "Cargando"
     this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year]).subscribe({
       next: (data: { [year: string]: Movimiento[] }) => {
         this.comparisonData[year] = data[year] || [];
         this.updatePieChart();
+        this.isLoading = false; // Desactivar "Cargando"
       },
       error: (error) => {
         console.error(`Error al cargar datos para el año ${year}:`, error);
+        this.isLoading = false; // Desactivar en caso de error
       }
     });
   }
 
   loadAllData() {
+    this.isLoading = true; // Activar "Cargando"
     const allYears = [...this.selectedComparisonYears];
 
     this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, allYears).subscribe(
@@ -171,9 +176,7 @@ export class ClientesComponent implements OnInit {
           this.comparisonData[year] = filteredData;
           this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
             const basebas = parseFloat(mov.BASEBAS) || 0;
-            const imptbas = parseFloat(mov.IMPTBAS) || 0;
-            const recbas = parseFloat(mov.RECBAS) || 0;
-            return acc + (basebas );
+            return acc + basebas;
           }, 0);
         });
 
@@ -182,9 +185,11 @@ export class ClientesComponent implements OnInit {
         }
 
         this.updateCharts();
+        this.isLoading = false; // Desactivar "Cargando"
       },
       (error) => {
         console.error('Error al cargar datos:', error);
+        this.isLoading = false; // Desactivar en caso de error
       }
     );
   }
