@@ -3,7 +3,7 @@
     <label>
       <span (click)="toggleCheckboxes()" class="toggle-label"> Comparar </span> años anteriores (máx. 5):
     </label>
-    <div class="checkbox-container" [hidden]="!showCheckboxes" [ngClass]="{'visible': showCheckboxes}">
+    <div class="checkbox-container" [ngClass]="{'visible': showCheckboxes && selectedComparisonYears.length > 0}" [hidden]="!showCheckboxes || selectedComparisonYears.length === 0">
       <div *ngFor="let year of years" class="checkbox-item">
         <input type="checkbox"
                [id]="'year-' + year"
@@ -19,10 +19,10 @@
 
 <div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <div class="card-container">
-    <!-- Vista inicial (sin checkboxes activados) -->
-    <ng-container *ngIf="!showCheckboxes">
+    <!-- Vista inicial (sin checkboxes activados o sin años seleccionados) -->
+    <ng-container *ngIf="!showCheckboxes || selectedComparisonYears.length === 0">
       <!-- Año actual (2025) -->
-      <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes }">
+      <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes || selectedComparisonYears.length === 0 }">
         <h3>Total Facturas
           <span style="color: #1189a7;">
             <ng-container *ngIf="!selectedYear || selectedYear <= 0; else yearTemplate">
@@ -40,13 +40,13 @@
       </div>
 
       <!-- Año anterior fijo (2024) -->
-      <div class="card-item" [ngClass]="{ 'visible': !showCheckboxes }">
+      <div class="card-item" [ngClass]="{ 'visible': !showCheckboxes || selectedComparisonYears.length === 0 }">
         <h3>Total Facturas
           <span style="color: #ff5733;">
-            <ng-container *ngIf="!defaultComparisonYear || defaultComparisonYear <= 0; else yearTemplate">
-              <i class="fa fa-circle-notch fa-spin" style="margin-left: 5px;"></i>
+            <ng-container *ngIf="!defaultComparisonYear || defaultComparisonYear <= 0; else TemplateAnterior">
+              <i class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
             </ng-container>
-            <ng-template #yearTemplate>
+            <ng-template #TemplateAnterior>
               {{defaultComparisonYear}}
             </ng-template>
           </span>
@@ -61,8 +61,8 @@
       </div>
     </ng-container>
 
-    <!-- Vista con checkboxes activados -->
-    <ng-container *ngIf="showCheckboxes">
+    <!-- Vista con checkboxes activados y años seleccionados -->
+    <ng-container *ngIf="showCheckboxes && selectedComparisonYears.length > 0">
       <div style="display: flex; gap: 162px;">
         <div *ngFor="let year of sortedComparisonYears; let i = index" class="card-item-comparativa">
           <h3>

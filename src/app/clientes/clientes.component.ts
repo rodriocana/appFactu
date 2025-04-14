@@ -66,12 +66,17 @@ export class ClientesComponent implements OnInit {
 
   toggleCheckboxes() {
     this.showCheckboxes = !this.showCheckboxes;
-    if (!this.showCheckboxes) {
+    if (this.showCheckboxes) {
+      // Al abrir, inicializar con año actual y anterior
       this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear];
       this.pieChartYear = this.selectedYear;
-      this.updatePieChart();
+    } else {
+      // Al cerrar, limpiar selección
+      this.selectedComparisonYears = [];
+      this.pieChartYear = this.selectedYear;
     }
     this.loadAllData();
+    this.updatePieChart();
   }
 
   toggleChartType(): void {
@@ -80,36 +85,51 @@ export class ClientesComponent implements OnInit {
   }
 
   loadAvailableYears() {
-    this.isLoading = true; // Activar "Cargando"
+    this.isLoading = true;
     this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
       this.selectedYear = this.AñoActual.getFullYear();
-      this.defaultComparisonYear = this.selectedYear - 1;
+      this.defaultComparisonYear = (this.selectedYear || this.AñoActual.getFullYear()) - 1;
+
+      console.log('selectedYear:', this.selectedYear);
+      console.log('defaultComparisonYear:', this.defaultComparisonYear);
 
       this.years = availableYears
-        .filter(year => year <= this.selectedYear)
+        .filter(year => year <= (this.selectedYear || 9999))
         .sort((a, b) => b - a)
         .slice(0, 15);
 
-      this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear];
-      this.pieChartYear = this.selectedYear;
+      this.selectedComparisonYears = [
+        this.selectedYear || this.AñoActual.getFullYear(),
+        this.defaultComparisonYear || (this.AñoActual.getFullYear() - 1)
+      ];
+      this.pieChartYear = this.selectedYear || this.AñoActual.getFullYear();
 
-      this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe(
-        (data: { [year: string]: Movimiento[] }) => {
-          this.Movimiento = data[this.selectedYear] || [];
-          this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
-            const basebas = parseFloat(mov.BASEBAS) || 0;
-            return acc + basebas;
-          }, 0);
-          this.updatePieChart();
-          this.isLoading = false; // Desactivar "Cargando"
-        },
-        (error) => {
-          console.error('Error al cargar datos iniciales del pastel:', error);
-          this.isLoading = false; // Desactivar en caso de error
-        }
-      );
-
-      this.loadAllData();
+      if (this.comparisonData[this.selectedYear] && this.comparisonTotals[this.selectedYear] !== undefined) {
+        this.Movimiento = this.comparisonData[this.selectedYear];
+        this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
+        this.updatePieChart();
+        this.isLoading = false;
+        this.loadAllData();
+      } else {
+        this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear as number]).subscribe(
+          (data: { [year: string]: Movimiento[] }) => {
+            this.Movimiento = data[this.selectedYear as number] || [];
+            this.comparisonData[this.selectedYear] = this.Movimiento;
+            this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
+              const basebas = parseFloat(mov.BASEBAS) || 0;
+              return acc + basebas;
+            }, 0);
+            this.comparisonTotals[this.selectedYear] = this.totalImporteFacturas;
+            this.updatePieChart();
+            this.isLoading = false;
+            this.loadAllData();
+          },
+          (error) => {
+            console.error('Error al cargar datos iniciales del pastel:', error);
+            this.isLoading = false;
+          }
+        );
+      }
     });
   }
 
@@ -119,81 +139,165 @@ export class ClientesComponent implements OnInit {
     if (isChecked) {
       if (this.selectedComparisonYears.length < 5 && !this.selectedComparisonYears.includes(year)) {
         this.selectedComparisonYears.push(year);
-        // Actualizar el gráfico de pastel solo si el nuevo año es mayor que pieChartYear
         if (year > this.pieChartYear) {
           this.pieChartYear = year;
-          this.loadAllData(); // Cargar datos primero
-          this.updatePieChartAfterDataLoad(year); // Actualizar después de cargar
+        }
+        // Verificar si los datos del año ya están en caché
+        if (this.comparisonData[year] && this.comparisonTotals[year] !== undefined) {
+          console.log(`Usando caché para el año ${year}`);
+          // Actualizar totalImporteFacturas si el año es selectedYear
+          if (year === this.selectedYear) {
+            this.totalImporteFacturas = this.comparisonTotals[year];
+          }
+          this.updateCharts();
+          this.updatePieChart();
         } else {
-          this.loadAllData(); // Solo cargar datos, sin actualizar el pastel
+          console.log(`Cargando datos para el año nuevo ${year}`);
+          // Consultar solo el año nuevo
+          this.loadYearData(year);
         }
       }
     } else {
       this.selectedComparisonYears = this.selectedComparisonYears.filter(y => y !== year);
       if (this.selectedComparisonYears.length === 0) {
         this.showCheckboxes = false;
-        this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear];
+        this.selectedComparisonYears = [];
         this.pieChartYear = this.selectedYear;
-        this.loadAllData();
-        this.updatePieChartAfterDataLoad(this.pieChartYear);
+        // Usar caché para selectedYear si existe
+        if (this.comparisonTotals[this.selectedYear] !== undefined) {
+          this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
+        } else {
+          this.loadYearData(this.selectedYear);
+        }
+        this.updateCharts();
+        this.updatePieChart();
       } else if (year === this.pieChartYear) {
         this.pieChartYear = this.mostRecentYear;
-        this.loadAllData();
-        this.updatePieChartAfterDataLoad(this.pieChartYear);
+        // Usar caché para pieChartYear si existe
+        if (this.comparisonTotals[this.pieChartYear] !== undefined) {
+          if (this.pieChartYear === this.selectedYear) {
+            this.totalImporteFacturas = this.comparisonTotals[this.pieChartYear];
+          }
+          this.updateCharts();
+          this.updatePieChart();
+        } else {
+          this.loadYearData(this.pieChartYear);
+        }
       } else {
-        this.loadAllData(); // Solo actualizar otros gráficos
+        this.updateCharts();
+        this.updatePieChart();
       }
     }
   }
 
-  // Nueva función para actualizar el gráfico después de cargar los datos
-  updatePieChartAfterDataLoad(year: number) {
-    this.isLoading = true; // Activar "Cargando"
+  loadYearData(year: number) {
+    if (year <= 0) return;
+
+    this.isLoading = true;
+    console.log(`Consultando SQL para el año ${year}`);
     this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year]).subscribe({
       next: (data: { [year: string]: Movimiento[] }) => {
         this.comparisonData[year] = data[year] || [];
+        this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
+          const basebas = parseFloat(mov.BASEBAS) || 0;
+          return acc + basebas;
+        }, 0);
+
+        // Actualizar totalImporteFacturas si el año es selectedYear
+        if (year === this.selectedYear) {
+          this.totalImporteFacturas = this.comparisonTotals[year];
+        }
+
+        this.updateCharts();
         this.updatePieChart();
-        this.isLoading = false; // Desactivar "Cargando"
+        this.isLoading = false;
       },
       error: (error) => {
         console.error(`Error al cargar datos para el año ${year}:`, error);
-        this.isLoading = false; // Desactivar en caso de error
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+  // Nueva función para actualizar el gráfico después de cargar los datos
+  updatePieChartAfterDataLoad(year: number) {
+    if (this.comparisonData[year] && this.comparisonTotals[year] !== undefined) {
+      if (year === this.selectedYear) {
+        this.totalImporteFacturas = this.comparisonTotals[year];
+      }
+      this.updatePieChart();
+      return;
+    }
+
+    this.isLoading = true;
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year]).subscribe({
+      next: (data: { [year: string]: Movimiento[] }) => {
+        this.comparisonData[year] = data[year] || [];
+        this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
+          const basebas = parseFloat(mov.BASEBAS) || 0;
+          return acc + basebas;
+        }, 0);
+
+        if (year === this.selectedYear) {
+          this.totalImporteFacturas = this.comparisonTotals[year];
+        }
+
+        this.updatePieChart();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error(`Error al cargar datos para el año ${year}:`, error);
+        this.isLoading = false;
       }
     });
   }
 
   loadAllData() {
-    this.isLoading = true; // Activar "Cargando"
-    const allYears = [...this.selectedComparisonYears];
+    this.isLoading = true;
+    let allYears = [...new Set([...this.selectedComparisonYears].filter(year => year > 0))];
 
-    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, allYears).subscribe(
+    console.log('allYears en loadAllData:', allYears);
+
+    if (allYears.length === 0) {
+      allYears = [this.selectedYear, this.defaultComparisonYear].filter(year => year > 0);
+    }
+
+    const yearsToFetch = allYears.filter(year => !this.comparisonData[year] || this.comparisonTotals[year] === undefined);
+
+    if (yearsToFetch.length === 0) {
+      this.updateCharts();
+      if (this.comparisonTotals[this.selectedYear] !== undefined) {
+        this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
+      }
+      this.isLoading = false;
+      return;
+    }
+
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, yearsToFetch).subscribe(
       (data: { [year: string]: Movimiento[] }) => {
-        this.comparisonData = {};
-        this.comparisonTotals = {};
-
-        allYears.forEach(year => {
-          const filteredData = data[year] || [];
-          this.comparisonData[year] = filteredData;
-          this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
+        yearsToFetch.forEach(year => {
+          this.comparisonData[year] = data[year] || [];
+          this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
             const basebas = parseFloat(mov.BASEBAS) || 0;
             return acc + basebas;
           }, 0);
         });
 
-        if (this.selectedComparisonYears.includes(this.selectedYear)) {
-          this.comparisonTotals[this.selectedYear] = this.totalImporteFacturas;
+        if (this.comparisonTotals[this.selectedYear] !== undefined) {
+          this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
         }
 
+        console.log('comparisonTotals:', this.comparisonTotals);
         this.updateCharts();
-        this.isLoading = false; // Desactivar "Cargando"
+        this.isLoading = false;
       },
       (error) => {
         console.error('Error al cargar datos:', error);
-        this.isLoading = false; // Desactivar en caso de error
+        this.isLoading = false;
       }
     );
   }
-
   onComparisonYearsChange() {
     if (this.selectedComparisonYears.length > 5) {
       this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 5);
@@ -308,10 +412,12 @@ export class ClientesComponent implements OnInit {
       const mes = fecha.getMonth();
       const mesNombre = meses[mes];
       const basebas = parseFloat(mov.BASEBAS) || 0;
-      const imptbas = parseFloat(mov.IMPTBAS) || 0;
-      const recbas = parseFloat(mov.RECBAS) || 0;
-      importesPorMesPrimary[mesNombre] += basebas ;
+      importesPorMesPrimary[mesNombre] += basebas;
     });
+
+    if (yearToShow === this.selectedYear && this.comparisonTotals[yearToShow] !== undefined) {
+      this.totalImporteFacturas = this.comparisonTotals[yearToShow];
+    }
 
     const labels = meses;
     const valoresPrimary = Object.values(importesPorMesPrimary);
@@ -347,7 +453,6 @@ export class ClientesComponent implements OnInit {
       }
     };
   }
-
   updateComparisonCharts() {
     const importesPorMesComparison: { [year: number]: { [mes: string]: number } } = {};
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
