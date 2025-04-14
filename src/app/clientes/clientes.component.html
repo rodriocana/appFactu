@@ -22,18 +22,38 @@
     <!-- Vista inicial (sin checkboxes activados) -->
     <ng-container *ngIf="!showCheckboxes">
       <!-- Año actual (2025) -->
-     <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes }">
-      <h3>Total Facturas <span style="color: #1189a7;">{{selectedYear}}</span></h3>
-      <p style="color: #1189a7; text-align: left;">
-        {{ (isLoading || totalImporteFacturas == null || totalImporteFacturas === 0) ? 'Cargando datos...' : (totalImporteFacturas | number:'1.2-2') + ' €' }}
-      </p>
-    </div>
+      <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes }">
+        <h3>Total Facturas
+          <span style="color: #1189a7;">
+            <ng-container *ngIf="!selectedYear || selectedYear <= 0; else yearTemplate">
+              <i class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
+            </ng-container>
+            <ng-template #yearTemplate>
+              {{selectedYear}}
+            </ng-template>
+          </span>
+        </h3>
+        <p style="color: #1189a7; text-align: left;">
+          {{ (isLoading || totalImporteFacturas == null || totalImporteFacturas === 0) ? 'Cargando datos...' : (totalImporteFacturas | number:'1.2-2') + ' €' }}
+          <i *ngIf="isLoading || totalImporteFacturas == null || totalImporteFacturas === 0" class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
+        </p>
+      </div>
 
       <!-- Año anterior fijo (2024) -->
       <div class="card-item" [ngClass]="{ 'visible': !showCheckboxes }">
-        <h3>Total Facturas <span style="color: #ff5733;">{{defaultComparisonYear}}</span></h3>
+        <h3>Total Facturas
+          <span style="color: #ff5733;">
+            <ng-container *ngIf="!defaultComparisonYear || defaultComparisonYear <= 0; else yearTemplate">
+              <i class="fa fa-circle-notch fa-spin" style="margin-left: 5px;"></i>
+            </ng-container>
+            <ng-template #yearTemplate>
+              {{defaultComparisonYear}}
+            </ng-template>
+          </span>
+        </h3>
         <p style="color: #ff5733;">
           {{ (isLoading || comparisonTotals[defaultComparisonYear] == null || comparisonTotals[defaultComparisonYear] === 0) ? 'Cargando datos...' : (comparisonTotals[defaultComparisonYear] | number:'1.2-2') + ' €' }}
+          <i *ngIf="isLoading || comparisonTotals[defaultComparisonYear] == null || comparisonTotals[defaultComparisonYear] === 0" class="fa fa-circle-notch fa-spin" style="margin-left: 5px;"></i>
         </p>
         <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
           {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
@@ -51,6 +71,7 @@
           </h3>
           <p [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">
             {{ (isLoading || comparisonTotals[year] == null || comparisonTotals[year] === 0) ? 'Cargando datos...' : (comparisonTotals[year] | number:'1.2-2') + ' €' }}
+            <i *ngIf="isLoading || comparisonTotals[year] == null || comparisonTotals[year] === 0" class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
           </p>
           <span class="difference" style="margin-top: 10px;" [ngClass]="{'positive': getAmountDifference(year) >= 0, 'negative': getAmountDifference(year) < 0}" *ngIf="year !== mostRecentYear">
             {{ getAmountDifference(year) >= 0 ? '+' : '' }}{{ getAmountDifference(year) | number:'1.2-2' }} € vs {{mostRecentYear}}
