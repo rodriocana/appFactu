@@ -2,6 +2,10 @@ const express = require('express');
 const mariadb = require('mariadb');
 const cors = require('cors'); // Importar cors
 
+const { exec } = require('child_process');
+const util = require('util');
+const path = require('path');
+
 const app = express();
 
 // Middleware para permitir el parseo de solicitudes JSON
@@ -21,6 +25,31 @@ const pool = mariadb.createPool({
   acquireTimeout: 5000
 });
 
+const execPromise = util.promisify(exec);
+// Endpoint para ejecutar el script de Python
+app.post('/api/procesar-dbf', async (req, res) => {
+  try {
+    // Path to the Python script
+    const scriptPath = path.join('C:', 'Users', 'Rodrigo', 'PyCharmMiscProject', 'script1.py');
+
+    // Execute the Python script
+    const { stdout, stderr } = await execPromise(`py "${scriptPath}"`);
+
+    if (stderr) {
+      console.error('Error in Python script:', stderr);
+      return res.status(500).json({ error: 'Error executing Python script' });
+    }
+
+    // Log the script output for debugging (optional)
+    console.log('Python script output:', stdout);
+
+    // Send success response to Angular
+    res.json({ status: 'success', message: 'Python script executed successfully, data inserted into database' });
+  } catch (err) {
+    console.error('Error executing script:', err);
+    res.status(500).json({ error: 'Error processing the DBF file' });
+  }
+});
 
 app.get('/api/movimientos', (req, res) => {
   // Soporte para múltiples años con ?years=2025,2024,2023
@@ -176,20 +205,23 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
   const codigo = req.params.codigo;
 
   if (req.query.years) {
-    const years = req.query.years.split(',').map(year => year.trim());
-    const conditions = years.map(year => `DOCFEC BETWEEN '${year}-01-01' AND '${year}-12-31'`).join(' OR ');
+    const years = req.query.years.split(',').map(year => parseInt(year.trim())).filter(year => !isNaN(year));
+
+    if (years.length === 0) {
+      return res.status(400).json({ error: 'No se proporcionaron años válidos' });
+    }
 
     pool.getConnection()
       .then(conn => {
         const query = `
-          SELECT CODTER, DOCFEC, BASEBAS,
-          YEAR(DOCFEC) AS year
+          SELECT CODTER, DOCFEC, BASEBAS, YEAR(DOCFEC) AS year
           FROM movalmc
-          WHERE CODTER = ? AND (${conditions})
+          WHERE CODTER = ? AND YEAR(DOCFEC) IN (?)
+          ORDER BY DOCFEC
         `;
 
-        console.log('Consulta SQL:', query.replace('?', `'${codigo}'`));
-        conn.query(query, [codigo])
+        console.log('Consulta SQL:', query.replace('?', `'${codigo}'`).replace('?', years.join(',')));
+        conn.query(query, [codigo, years])
           .then(rows => {
             const groupedByYear = rows.reduce((acc, row) => {
               const year = row.year;
@@ -197,8 +229,7 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
               acc[year].push({
                 CODTER: row.CODTER,
                 DOCFEC: row.DOCFEC,
-                BASEBAS: row.BASEBAS,
-
+                BASEBAS: row.BASEBAS
               });
               return acc;
             }, {});
@@ -229,7 +260,7 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
 
         conn.query(query, [codigo, startDate, endDate])
           .then(rows => {
-            res.json(rows); // Devuelve array plano para ?year=
+            res.json(rows);
           })
           .catch(err => {
             console.error('Error en la consulta:', err);

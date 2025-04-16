@@ -20,12 +20,14 @@
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
     "chart.js": "^4.3.0",
+    "child_process": "^1.0.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "mariadb": "^3.4.1",
     "ng2-charts": "^4.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "util": "^0.12.5",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { SidebarService } from '../sidebar.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ServicioPythonService } from '../servicio-python.service';
 
 @Component({
   selector: 'app-clientes',
@@ -33,11 +34,15 @@ export class ClientesComponent implements OnInit {
   defaultComparisonYear: number = 0; // Año anterior fijo (2024 por defecto)
   pieChartYear: number = 0; // Año actualmente mostrado en el gráfico de pastel
   isLoading: boolean = false;
+  totalImporteCache: { [year: string]: number } = {};
+  isYearLoading: { [year: number]: boolean } = {}; // Nueva bandera por año
+
 
   constructor(
     private movimientosService: MovimientosService,
     private sidebarService: SidebarService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private pythonService: ServicioPythonService
   ) {}
 
   // en este getter devolvemos los años de comparacion ordenados de mayor a menor
@@ -50,6 +55,7 @@ export class ClientesComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Suscribirse al estado de la sidebar
     this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
@@ -59,7 +65,26 @@ export class ClientesComponent implements OnInit {
       const codigo = params.get('codigo');
       if (codigo && codigo !== this.codigoCliente) {
         this.codigoCliente = codigo;
-        this.loadAvailableYears(); // Recargar datos cuando cambie el código
+        // Iniciar el proceso del script de Python
+        this.iniciarProcesoPython();
+      }
+    });
+  }
+
+  // Método para iniciar el script de Python
+  iniciarProcesoPython() {
+    this.isLoading = true; // Indicar que está cargando
+    this.pythonService.procesarDbf().subscribe({
+      next: (response) => {
+        console.log('Proceso de Python completado:', response.message);
+        // Recargar los datos después de que el script termine
+        this.loadAvailableYears();
+      },
+      error: (err) => {
+        console.error('Error al ejecutar el script de Python:', err);
+        this.isLoading = false; // Finalizar carga incluso si hay error
+        // Opcional: Manejar el error sin recargar datos
+        this.loadAvailableYears(); // Cargar datos aunque falle el script
       }
     });
   }
@@ -84,77 +109,24 @@ export class ClientesComponent implements OnInit {
     this.chartDataGeneral = this.isLineChart ? this.chartDataLine : this.chartDataBar;
   }
 
-  loadAvailableYears() {
-    this.isLoading = true;
-    this.movimientosService.getAvailableYears().subscribe((availableYears: number[]) => {
-      this.selectedYear = this.AñoActual.getFullYear();
-      this.defaultComparisonYear = (this.selectedYear || this.AñoActual.getFullYear()) - 1;
 
-      console.log('selectedYear:', this.selectedYear);
-      console.log('defaultComparisonYear:', this.defaultComparisonYear);
-
-      this.years = availableYears
-        .filter(year => year <= (this.selectedYear || 9999))
-        .sort((a, b) => b - a)
-        .slice(0, 15);
-
-      this.selectedComparisonYears = [
-        this.selectedYear || this.AñoActual.getFullYear(),
-        this.defaultComparisonYear || (this.AñoActual.getFullYear() - 1)
-      ];
-      this.pieChartYear = this.selectedYear || this.AñoActual.getFullYear();
-
-      if (this.comparisonData[this.selectedYear] && this.comparisonTotals[this.selectedYear] !== undefined) {
-        this.Movimiento = this.comparisonData[this.selectedYear];
-        this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
-        this.updatePieChart();
-        this.isLoading = false;
-        this.loadAllData();
-      } else {
-        this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear as number]).subscribe(
-          (data: { [year: string]: Movimiento[] }) => {
-            this.Movimiento = data[this.selectedYear as number] || [];
-            this.comparisonData[this.selectedYear] = this.Movimiento;
-            this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
-              const basebas = parseFloat(mov.BASEBAS) || 0;
-              return acc + basebas;
-            }, 0);
-            this.comparisonTotals[this.selectedYear] = this.totalImporteFacturas;
-            this.updatePieChart();
-            this.isLoading = false;
-            this.loadAllData();
-          },
-          (error) => {
-            console.error('Error al cargar datos iniciales del pastel:', error);
-            this.isLoading = false;
-          }
-        );
-      }
-    });
-  }
-
+  // aqui se maneja cuando añado un año nuevo al checkbox
   onCheckboxChange(year: number, event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
 
     if (isChecked) {
       if (this.selectedComparisonYears.length < 5 && !this.selectedComparisonYears.includes(year)) {
         this.selectedComparisonYears.push(year);
-        if (year > this.pieChartYear) {
-          this.pieChartYear = year;
-        }
-        // Verificar si los datos del año ya están en caché
-        if (this.comparisonData[year] && this.comparisonTotals[year] !== undefined) {
-          console.log(`Usando caché para el año ${year}`);
-          // Actualizar totalImporteFacturas si el año es selectedYear
-          if (year === this.selectedYear) {
-            this.totalImporteFacturas = this.comparisonTotals[year];
-          }
-          this.updateCharts();
-          this.updatePieChart();
+        // Cargar solo los datos del nuevo año si no está en comparisonData
+        if (!this.comparisonData[year]) {
+          this.loadDataForYears([year]); // Cargar solo el nuevo año
         } else {
-          console.log(`Cargando datos para el año nuevo ${year}`);
-          // Consultar solo el año nuevo
-          this.loadYearData(year);
+          // Si los datos ya están cargados, actualizar gráficos
+          this.updateCharts();
+          if (year > this.pieChartYear) {
+            this.pieChartYear = year;
+            this.updatePieChart();
+          }
         }
       }
     } else {
@@ -163,35 +135,78 @@ export class ClientesComponent implements OnInit {
         this.showCheckboxes = false;
         this.selectedComparisonYears = [];
         this.pieChartYear = this.selectedYear;
-        // Usar caché para selectedYear si existe
-        if (this.comparisonTotals[this.selectedYear] !== undefined) {
-          this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
-        } else {
-          this.loadYearData(this.selectedYear);
-        }
-        this.updateCharts();
-        this.updatePieChart();
+        this.comparisonTotals = {};
+        this.comparisonData = {};
+        this.loadDataForYears([this.selectedYear, this.defaultComparisonYear]); // Cargar datos para la vista inicial
       } else if (year === this.pieChartYear) {
         this.pieChartYear = this.mostRecentYear;
-        // Usar caché para pieChartYear si existe
-        if (this.comparisonTotals[this.pieChartYear] !== undefined) {
-          if (this.pieChartYear === this.selectedYear) {
-            this.totalImporteFacturas = this.comparisonTotals[this.pieChartYear];
-          }
-          this.updateCharts();
-          this.updatePieChart();
-        } else {
-          this.loadYearData(this.pieChartYear);
-        }
-      } else {
         this.updateCharts();
         this.updatePieChart();
+      } else {
+        this.updateCharts();
       }
     }
   }
 
+  loadDataForYears(yearsToLoad: number[]) {
+    this.isLoading = true;
+    // Inicializar isYearLoading para los años que se van a cargar
+    yearsToLoad.forEach(year => {
+      this.isYearLoading[year] = true;
+    });
+
+    const validYears = [...new Set(yearsToLoad.filter(year => year > 0 && !isNaN(year)))];
+
+    console.log('Cargando datos para años:', validYears);
+
+    if (validYears.length === 0) {
+      validYears.forEach(year => {
+        this.isYearLoading[year] = false;
+      });
+      this.isLoading = false;
+      return;
+    }
+
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, validYears).subscribe(
+      (data: { [year: string]: Movimiento[] }) => {
+        validYears.forEach(year => {
+          const filteredData = data[year] || [];
+          this.comparisonData[year] = filteredData;
+          this.comparisonTotals[year] = filteredData.reduce((acc, mov) => {
+            const basebas = parseFloat(mov.BASEBAS) || 0;
+            return acc + basebas;
+          }, 0);
+          this.isYearLoading[year] = false; // Marcar el año como cargado
+        });
+
+        console.log('comparisonTotals:', this.comparisonTotals);
+        this.updateCharts();
+        this.updatePieChart();
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error al cargar datos:', error);
+        validYears.forEach(year => {
+          this.isYearLoading[year] = false;
+        });
+        this.isLoading = false;
+      }
+    );
+  }
+
   loadYearData(year: number) {
     if (year <= 0) return;
+
+    // Verificar si los datos ya están en caché
+    if (this.comparisonTotals[year] !== undefined && this.comparisonData[year]) {
+      console.log(`Datos para el año ${year} ya en caché, omitiendo consulta`);
+      if (year === this.selectedYear) {
+        this.totalImporteFacturas = this.comparisonTotals[year];
+      }
+      this.updateCharts();
+      this.updatePieChart();
+      return;
+    }
 
     this.isLoading = true;
     console.log(`Consultando SQL para el año ${year}`);
@@ -203,7 +218,6 @@ export class ClientesComponent implements OnInit {
           return acc + basebas;
         }, 0);
 
-        // Actualizar totalImporteFacturas si el año es selectedYear
         if (year === this.selectedYear) {
           this.totalImporteFacturas = this.comparisonTotals[year];
         }
@@ -220,84 +234,35 @@ export class ClientesComponent implements OnInit {
   }
 
 
+
   // Nueva función para actualizar el gráfico después de cargar los datos
-  updatePieChartAfterDataLoad(year: number) {
-    if (this.comparisonData[year] && this.comparisonTotals[year] !== undefined) {
-      if (year === this.selectedYear) {
-        this.totalImporteFacturas = this.comparisonTotals[year];
-      }
-      this.updatePieChart();
-      return;
-    }
-
-    this.isLoading = true;
-    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year]).subscribe({
-      next: (data: { [year: string]: Movimiento[] }) => {
-        this.comparisonData[year] = data[year] || [];
-        this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
-          const basebas = parseFloat(mov.BASEBAS) || 0;
-          return acc + basebas;
-        }, 0);
-
-        if (year === this.selectedYear) {
-          this.totalImporteFacturas = this.comparisonTotals[year];
-        }
-
-        this.updatePieChart();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error(`Error al cargar datos para el año ${year}:`, error);
-        this.isLoading = false;
-      }
-    });
-  }
-
+updatePieChartAfterDataLoad(year: number) {
+  this.updatePieChart();
+}
+  // Modificar loadAllData para usar loadDataForYears
   loadAllData() {
     this.isLoading = true;
-    let allYears = [...new Set([...this.selectedComparisonYears].filter(year => year > 0))];
-
-    console.log('allYears en loadAllData:', allYears);
+    let allYears = [...new Set([...this.selectedComparisonYears].filter(year => year > 0 && !isNaN(year)))];
 
     if (allYears.length === 0) {
-      allYears = [this.selectedYear, this.defaultComparisonYear].filter(year => year > 0);
+      allYears = [this.selectedYear, this.defaultComparisonYear].filter(year => year > 0 && !isNaN(year));
     }
 
-    const yearsToFetch = allYears.filter(year => !this.comparisonData[year] || this.comparisonTotals[year] === undefined);
+    // Filtrar solo los años que no están en comparisonData
+    const yearsToLoad = allYears.filter(year => !this.comparisonData[year]);
 
-    if (yearsToFetch.length === 0) {
+    console.log('Años a cargar:', yearsToLoad);
+
+    if (yearsToLoad.length === 0) {
       this.updateCharts();
-      if (this.comparisonTotals[this.selectedYear] !== undefined) {
-        this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
-      }
+      this.updatePieChart();
       this.isLoading = false;
       return;
     }
 
-    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, yearsToFetch).subscribe(
-      (data: { [year: string]: Movimiento[] }) => {
-        yearsToFetch.forEach(year => {
-          this.comparisonData[year] = data[year] || [];
-          this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
-            const basebas = parseFloat(mov.BASEBAS) || 0;
-            return acc + basebas;
-          }, 0);
-        });
-
-        if (this.comparisonTotals[this.selectedYear] !== undefined) {
-          this.totalImporteFacturas = this.comparisonTotals[this.selectedYear];
-        }
-
-        console.log('comparisonTotals:', this.comparisonTotals);
-        this.updateCharts();
-        this.isLoading = false;
-      },
-      (error) => {
-        console.error('Error al cargar datos:', error);
-        this.isLoading = false;
-      }
-    );
+    this.loadDataForYears(yearsToLoad);
   }
+
   onComparisonYearsChange() {
     if (this.selectedComparisonYears.length > 5) {
       this.selectedComparisonYears = this.selectedComparisonYears.slice(0, 5);
@@ -503,6 +468,60 @@ export class ClientesComponent implements OnInit {
 
     this.chartDataBar = { labels, datasets: barDatasets };
     this.chartDataGeneral = this.isLineChart ? this.chartDataLine : this.chartDataBar;
+  }
+
+
+  loadAvailableYears() {
+    this.isLoading = true;
+    this.movimientosService.getAvailableYears().subscribe({
+      next: (availableYears: number[]) => {
+        console.log('Años recibidos del backend:', availableYears); // Depuración
+
+        this.selectedYear = this.AñoActual.getFullYear(); // Ej: 2025
+        this.defaultComparisonYear = this.selectedYear - 1; // Ej: 2024
+
+        console.log('selectedYear:', this.selectedYear);
+        console.log('defaultComparisonYear:', this.defaultComparisonYear);
+
+        // Filtrar años inválidos (0, NaN, undefined) y limitar a los últimos 15 años válidos
+        this.years = availableYears
+          .filter(year => year > 0 && !isNaN(year) && year <= this.selectedYear)
+          .sort((a, b) => b - a)
+          .slice(0, 15);
+
+        console.log('Años filtrados para checkboxes:', this.years); // Depuración
+
+        this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear].filter(year => year > 0);
+        this.pieChartYear = this.selectedYear;
+
+        // Inicializar isYearLoading para los años iniciales
+        this.isYearLoading[this.selectedYear] = true;
+        this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe({
+          next: (data: { [year: string]: Movimiento[] }) => {
+            this.Movimiento = data[this.selectedYear] || [];
+            this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
+              const basebas = parseFloat(mov.BASEBAS) || 0;
+              return acc + basebas;
+            }, 0);
+            this.comparisonData[this.selectedYear] = this.Movimiento;
+            this.comparisonTotals[this.selectedYear] = this.totalImporteFacturas;
+            this.isYearLoading[this.selectedYear] = false;
+            this.updatePieChart();
+            this.isLoading = false;
+            this.loadAllData();
+          },
+          error: (error) => {
+            console.error('Error al cargar datos iniciales del pastel:', error);
+            this.isYearLoading[this.selectedYear] = false;
+            this.isLoading = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error al cargar años disponibles:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   generatePDF() {

@@ -5,12 +5,8 @@
     </label>
     <div class="checkbox-container" [ngClass]="{'visible': showCheckboxes && selectedComparisonYears.length > 0}" [hidden]="!showCheckboxes || selectedComparisonYears.length === 0">
       <div *ngFor="let year of years" class="checkbox-item">
-        <input type="checkbox"
-               [id]="'year-' + year"
-               [value]="year"
-               [checked]="selectedComparisonYears.includes(year)"
-               (change)="onCheckboxChange(year, $event)"
-               [disabled]="selectedComparisonYears.length >= 5 && !selectedComparisonYears.includes(year)">
+        <input type="checkbox" [id]="'year-' + year" [value]="year" [checked]="selectedComparisonYears.includes(year)"
+               (change)="onCheckboxChange(year, $event)" [disabled]="selectedComparisonYears.length >= 5 && !selectedComparisonYears.includes(year)">
         <label [for]="'year-' + year">{{ year }}</label>
       </div>
     </div>
@@ -53,7 +49,7 @@
         </h3>
         <p style="color: #ff5733;">
           {{ (isLoading || comparisonTotals[defaultComparisonYear] == null || comparisonTotals[defaultComparisonYear] === 0) ? 'Cargando datos...' : (comparisonTotals[defaultComparisonYear] | number:'1.2-2') + ' €' }}
-          <i *ngIf="isLoading || comparisonTotals[defaultComparisonYear] == null || comparisonTotals[defaultComparisonYear] === 0" class="fa fa-circle-notch fa-spin" style="margin-left: 5px;"></i>
+          <i *ngIf="isLoading || comparisonTotals[defaultComparisonYear] == null || comparisonTotals[defaultComparisonYear] === 0" class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
         </p>
         <span class="percentage" [ngClass]="{'positive': getPercentageDifference(defaultComparisonYear) >= 0, 'negative': getPercentageDifference(defaultComparisonYear) < 0}">
           {{ getPercentageDifference(defaultComparisonYear) >= 0 ? '+' : '' }}{{ getPercentageDifference(defaultComparisonYear) | number:'1.2-2' }}% vs {{selectedYear}}
@@ -70,8 +66,8 @@
             <span [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{ year }}</span>
           </h3>
           <p [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">
-            {{ (isLoading || comparisonTotals[year] == null || comparisonTotals[year] === 0) ? 'Cargando datos...' : (comparisonTotals[year] | number:'1.2-2') + ' €' }}
-            <i *ngIf="isLoading || comparisonTotals[year] == null || comparisonTotals[year] === 0" class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
+            {{ (isYearLoading[year] || comparisonTotals[year] == null) ? 'Cargando datos...' : (comparisonTotals[year] | number:'1.2-2') + ' €' }}
+            <i *ngIf="isYearLoading[year] || comparisonTotals[year] == null" class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
           </p>
           <span class="difference" style="margin-top: 10px;" [ngClass]="{'positive': getAmountDifference(year) >= 0, 'negative': getAmountDifference(year) < 0}" *ngIf="year !== mostRecentYear">
             {{ getAmountDifference(year) >= 0 ? '+' : '' }}{{ getAmountDifference(year) | number:'1.2-2' }} € vs {{mostRecentYear}}
