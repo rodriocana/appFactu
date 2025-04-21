@@ -38,6 +38,7 @@ export class ClientesComponent implements OnInit {
   isYearLoading: { [year: number]: boolean } = {}; // Nueva bandera por año
 
 
+
   constructor(
     private movimientosService: MovimientosService,
     private sidebarService: SidebarService,
