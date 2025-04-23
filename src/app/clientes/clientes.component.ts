@@ -328,7 +328,7 @@ updatePieChartAfterDataLoad(year: number) {
           }
         }
       },
-      title: { display: true, text: `Comparativa por Años - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } }
+      title: { display: true, text: `Comparativa por Años - Cliente ${this.clientName}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } }
     },
     scales: {
       x: {},
@@ -370,7 +370,7 @@ updatePieChartAfterDataLoad(year: number) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      title: { display: true, text: `Comparativa por Años - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } },
+      title: { display: true, text: `Comparativa por Años - Cliente ${this.clientName}`, font: { size: 16 }, padding: { top: 25, bottom: 10 } },
       tooltip: {
         callbacks: {
           label: (context) => {
@@ -630,7 +630,7 @@ updatePieChartAfterDataLoad(year: number) {
         },
         title: {
           display: true,
-          text: `Comparativa por Años - Cliente ${this.codigoCliente}`,
+          text: `Comparativa por Años - Cliente ${this.clientName}`,
           font: { size: 16 },
           color: textColor,
           padding: { top: 25, bottom: 10 },
@@ -655,7 +655,7 @@ updatePieChartAfterDataLoad(year: number) {
       plugins: {
         title: {
           display: true,
-          text: `Comparativa por Años - Cliente ${this.codigoCliente}`,
+          text: `Comparativa por Años - Cliente ${this.clientName}`,
           font: { size: 16 },
           color: textColor,
           padding: { top: 25, bottom: 10 },

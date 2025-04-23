@@ -59,7 +59,7 @@
 
     <!-- Vista con checkboxes activados y años seleccionados -->
     <ng-container *ngIf="showCheckboxes && selectedComparisonYears.length > 0">
-      <div style="display: flex; gap: 192px;">
+      <div style="display: flex; gap: 162px;">
         <div *ngFor="let year of sortedComparisonYears; let i = index" class="card-item-comparativa">
           <h3>
             <span *ngIf="isActualYear(year)" style="font-size: 0.8em; color: #089add;">Actual </span>
@@ -104,3 +104,6 @@
 <button (click)="generatePDF()" class="pdf-button" [ngClass]="{'sidebar-open': isSidebarOpen}">
   <i class="fa-solid fa-download"></i> Descargar PDF
 </button>
+
+<p class="text-Infocon">Desarrollado por Infocon S.L.U.</p>
+
