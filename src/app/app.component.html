@@ -1,12 +1,13 @@
 <!-- top bar -->
 <nav class="topbar" [class.open]="isSidebarOpen">
+  <span class="client-name" style="margin-left: 20px; cursor: default;" *ngIf="clientName"> CLIENTE: {{ clientName }}</span>
   <div class="texto-container">
-    <a [routerLink]="'/configuracion'" title="Configuración">
+  <a [routerLink]="'/configuracion'" title="Configuración">
       <i class="fas fa-sliders-h"></i>
       <span>Configuración</span>
     </a>
-
-    <a  title="Salir">
+    <a class="lightbulb" (click)="switchmode()" style="cursor: pointer;"><i class="fa-solid fa-lightbulb"></i></a>
+    <a title="Salir" style="cursor: default;">
       <i class="fas fa-sign-out-alt"></i>
       <span>Salir</span>
     </a>

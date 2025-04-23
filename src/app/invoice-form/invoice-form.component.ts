@@ -3,11 +3,15 @@ import { InvoiceService } from '../invoice.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [FormsModule, CommonModule], // FormsModule para ngModel
+  imports: [FormsModule, CommonModule, IconFieldModule, InputIconModule, FloatLabelModule], // FormsModule para ngModel
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss']
 })
@@ -24,6 +28,10 @@ export class InvoiceFormComponent {
     invoiceNumber: "",
     date: new Date().toISOString().split('T')[0]
   };
+
+  value1: string = '';
+  value2: string = '';
+  value3: string = '';
 
   constructor(private invoiceService: InvoiceService, private router: Router) {}
 

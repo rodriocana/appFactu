@@ -13,14 +13,14 @@
   </div>
 </div>
 
-<div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen}">
+<div class="info-card" [ngClass]="{'sidebar-open': isSidebarOpen, 'dark-mode': isDarkMode}">
   <div class="card-container">
     <!-- Vista inicial (sin checkboxes activados o sin años seleccionados) -->
     <ng-container *ngIf="!showCheckboxes || selectedComparisonYears.length === 0">
       <!-- Año actual (2025) -->
       <div class="card-item-actual" [ngClass]="{ 'visible': !showCheckboxes || selectedComparisonYears.length === 0 }">
         <h3>Total Facturas
-          <span style="color: #1189a7;">
+          <span class="year-highlight">
             <ng-container *ngIf="!selectedYear || selectedYear <= 0; else yearTemplate">
               <i class="fa fa-spinner fa-spin" style="margin-left: 5px;"></i>
             </ng-container>
@@ -59,10 +59,10 @@
 
     <!-- Vista con checkboxes activados y años seleccionados -->
     <ng-container *ngIf="showCheckboxes && selectedComparisonYears.length > 0">
-      <div style="display: flex; gap: 162px;">
+      <div style="display: flex; gap: 192px;">
         <div *ngFor="let year of sortedComparisonYears; let i = index" class="card-item-comparativa">
           <h3>
-            <span *ngIf="year === mostRecentYear" style="font-size: 0.8em; color: #089add;">Actual </span>
+            <span *ngIf="isActualYear(year)" style="font-size: 0.8em; color: #089add;">Actual </span>
             <span [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">{{ year }}</span>
           </h3>
           <p [style.color]="['#1189a7', '#ff5733', '#8BC34A', '#FFCE56', '#9966FF'][i % 5]">
@@ -81,7 +81,7 @@
   </div>
 </div>
 
-<div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen}">
+<div class="chart-container" [ngClass]="{'sidebar-open': isSidebarOpen, 'dark-mode': isDarkMode}">
   <div class="pie-container">
     <div class="pie">
       <canvas baseChart [data]="chartDataPie" [options]="chartOptionsPie" [type]="'pie'"></canvas>

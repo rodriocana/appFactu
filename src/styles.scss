@@ -9,9 +9,12 @@ $shadow-color: rgba(0, 0, 0, 0.1);
 $nav-width: 120px;
 $top-nav-height: 38px;
 
+
 // Importar FontAwesome (sin cambios)
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
+
+
 
 // Definir la animación para el texto
 @keyframes fadeIn {
@@ -31,6 +34,49 @@ body {
   background:linear-gradient(173deg, #38c6cb, #5f8abf);
   display: flex;
   height: 100vh;
+}
+
+body.dark-mode {
+  background: #020617; /* Color de fondo oscuro */
+  color: white; /* Color de texto claro */
+}
+
+.dark-mode .lightbulb:hover i {
+  color: #ffd700; /* Vibrant yellow/gold */
+  transform: scale(1.2); /* Slight scale-up */
+  transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); /* Subtle glow effect */
+}
+/* Otros estilos opcionales para el modo oscuro */
+.dark-mode .topbar {
+  background-color: #020617; /* Fondo oscuro para la barra superior */
+}
+
+.dark-mode .sidebar .toggle-btn {
+  color: white; /* Color blanco para el botón en modo oscuro */
+}
+
+.dark-mode .topbar span {
+  color: white; /* Color de texto claro en la barra superior */
+}
+
+
+
+.dark-mode .topbar span:hover {
+  color: rgb(40, 178, 241); /* Color de texto claro en la barra superior */
+}
+
+.dark-mode .sidebar {
+  background-color: #020617; /* Fondo oscuro para la barra superior */
+}
+
+
+.dark-mode .topbar i {
+  color: white; /* Iconos blancos en el modo oscuro */
+}
+
+body.dark-mode .info-card {
+  background-color: #0f172a;;
 }
 
 // Barra lateral
@@ -135,6 +181,14 @@ nav.sidebar {
   width: 40px;
 }
 
+.lightbulb i{
+  color: rgb(243, 181, 9);
+}
+
+.lightbulb:hover i{
+  color: rgb(15, 15, 15);
+}
+
 nav.topbar {
   width: 98%;
   height: 50px; /* Aumenté un poco la altura para los íconos y texto */
@@ -175,7 +229,7 @@ nav.topbar {
     margin-right: 20px; /* Separación de los botones a la derecha */
     justify-content: flex-end;
     align-items: center;
-    transform: translate(1547px, 0px);
+    transform: translate(-150px, 0px);
   }
 
   a {
@@ -187,13 +241,15 @@ nav.topbar {
     align-items: center;
     transition: 0.3s;
 
+
+
     i {
       font-size: 16px; /* Ajuste en el tamaño del ícono */
       margin-right: 8px;
     }
 
     &:hover {
-      color: #18bc9c; /* Color de hover */
+      color: rgb(14, 160, 228);
       transform: scale(1.05);
     }
   }

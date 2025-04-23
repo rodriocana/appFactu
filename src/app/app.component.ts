@@ -1,9 +1,10 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { SidebarService } from './sidebar.service';
 import { MovimientosService } from './movimientosService.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -12,37 +13,57 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
+
   isSidebarOpen = false;
   searchCodter: string = '';
   filteredCodters: string[] = [];
   allCodters: string[] = [];
-  showSearch = false; // Controla la visibilidad del buscador
-  private keyPressCount = 0; // Contador de pulsaciones
-  private lastKeyPressTime = 0; // Timestamp de la última pulsación
-  private readonly keyToTrigger = 'c'; // Tecla que activa el buscador (puedes cambiarla)
-  private readonly requiredPresses = 5; // Número de pulsaciones necesarias
-  private readonly timeWindow = 1000; // Ventana de tiempo en milisegundos (1 segundo)
+  showSearch = false;
+  clientName: string = ''; // Nueva propiedad para el nombre del cliente
+  private keyPressCount = 0;
+  private lastKeyPressTime = 0;
+  private readonly keyToTrigger = 'c';
+  private readonly requiredPresses = 5;
+  private readonly timeWindow = 1000;
+  private subscriptions = new Subscription(); // Agrupar todas las suscripciones
+  isDarkMode = false; // Agregada propiedad para modo oscuro
 
   constructor(
     private sidebarService: SidebarService,
     private movimientosService: MovimientosService,
     private router: Router
-  ) {
-    this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
-      this.isSidebarOpen = isOpen;
-    });
+  ) {}
+
+  ngOnInit() {
+    // Suscripción al estado de la barra lateral
+    this.subscriptions.add(
+      this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
+        this.isSidebarOpen = isOpen;
+      })
+    );
+
+    // Suscripción al nombre del cliente
+    this.subscriptions.add(
+      this.sidebarService.clientName$.subscribe((name) => {
+        this.clientName = name;
+      })
+    );
+
+    // Cargar los codters
     this.loadAllCodters();
   }
 
-  // Escuchar eventos de teclado a nivel global
+  ngOnDestroy() {
+    // Desuscribir todas las suscripciones
+    this.subscriptions.unsubscribe();
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     const currentTime = Date.now();
 
-    // Verificar si la tecla presionada es la que queremos (por ejemplo, "c")
     if (event.key.toLowerCase() === this.keyToTrigger) {
-      // Si ha pasado demasiado tiempo desde la última pulsación, reiniciar el contador
       if (currentTime - this.lastKeyPressTime > this.timeWindow) {
         this.keyPressCount = 0;
       }
@@ -50,13 +71,11 @@ export class AppComponent {
       this.keyPressCount++;
       this.lastKeyPressTime = currentTime;
 
-      // Si se alcanza el número requerido de pulsaciones y el sidebar está abierto, mostrar el buscador
       if (this.keyPressCount >= this.requiredPresses && this.isSidebarOpen) {
         this.showSearch = true;
-        this.keyPressCount = 0; // Reiniciar para futuras activaciones
+        this.keyPressCount = 0;
       }
     } else {
-      // Si se presiona otra tecla, reiniciar el contador
       this.keyPressCount = 0;
     }
   }
@@ -66,7 +85,7 @@ export class AppComponent {
     if (!this.isSidebarOpen) {
       this.searchCodter = '';
       this.filteredCodters = [];
-      this.showSearch = false; // Ocultar buscador al cerrar sidebar
+      this.showSearch = false;
     }
   }
 
@@ -112,5 +131,16 @@ export class AppComponent {
 
   private navigateToCliente(codter: string) {
     this.router.navigate(['/clientes', codter]);
+  }
+
+  switchmode() {
+    this.isDarkMode = !this.isDarkMode;
+    this.sidebarService.setDarkMode(this.isDarkMode);
+
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
   }
 }

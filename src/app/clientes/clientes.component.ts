@@ -10,6 +10,7 @@ import { SidebarService } from '../sidebar.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ServicioPythonService } from '../servicio-python.service';
+import { Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-clientes',
@@ -21,9 +22,9 @@ export class ClientesComponent implements OnInit {
   Movimiento: Movimiento[] = [];
   totalImporteFacturas: number = 0;
   comparisonTotals: { [year: number]: number } = {};
-  selectedYear: number = 0; // Año actual (2025 por defecto)
-  selectedComparisonYears: number[] = []; // Años seleccionados para comparación
-  years: number[] = []; // Lista completa de años disponibles
+  selectedYear: number = 0;
+  selectedComparisonYears: number[] = [];
+  years: number[] = [];
   comparisonData: { [year: number]: Movimiento[] } = {};
   isSidebarOpen = false;
   showCheckboxes: boolean = false;
@@ -31,22 +32,23 @@ export class ClientesComponent implements OnInit {
   chartDataGeneral: ChartData<'line' | 'bar'> = { labels: [], datasets: [] };
   isLineChart = true;
   codigoCliente: string = '';
-  defaultComparisonYear: number = 0; // Año anterior fijo (2024 por defecto)
-  pieChartYear: number = 0; // Año actualmente mostrado en el gráfico de pastel
+  clientName: string = ''; // Nueva propiedad para el nombre del cliente
+  defaultComparisonYear: number = 0;
+  pieChartYear: number = 0;
   isLoading: boolean = false;
   totalImporteCache: { [year: string]: number } = {};
-  isYearLoading: { [year: number]: boolean } = {}; // Nueva bandera por año
-
-
+  isYearLoading: { [year: number]: boolean } = {};
+  private sidebarSubscription: Subscription | undefined; // De
+  isDarkMode = false;
 
   constructor(
     private movimientosService: MovimientosService,
     private sidebarService: SidebarService,
     private route: ActivatedRoute,
-    private pythonService: ServicioPythonService
+    private pythonService: ServicioPythonService,
+
   ) {}
 
-  // en este getter devolvemos los años de comparacion ordenados de mayor a menor
   get sortedComparisonYears(): number[] {
     return [...this.selectedComparisonYears].sort((a, b) => b - a);
   }
@@ -55,36 +57,62 @@ export class ClientesComponent implements OnInit {
     return this.sortedComparisonYears[0] || this.selectedYear;
   }
 
+  isActualYear(year: number): boolean {
+    return year === this.AñoActual.getFullYear();
+  }
+
   ngOnInit() {
-    // Suscribirse al estado de la sidebar
-    this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
+    // Suscripción al estado de la barra lateral
+    this.sidebarSubscription = this.sidebarService.sidebarOpen$.subscribe((isOpen) => {
       this.isSidebarOpen = isOpen;
     });
 
-    // Suscribirse a los cambios en los parámetros de la ruta
-    this.route.paramMap.subscribe(params => {
-      const codigo = params.get('codigo');
-      if (codigo && codigo !== this.codigoCliente) {
-        this.codigoCliente = codigo;
-        // Iniciar el proceso del script de Python
-        this.iniciarProcesoPython();
+    // Suscripción al modo oscuro
+    this.sidebarService.darkMode$.subscribe((isDark) => {
+      this.isDarkMode = isDark;
+      this.updateChartOptions(); // Actualiza las opciones de los gráficos
+      this.updateCharts(); // Actualiza los gráficos de líneas/barras
+      this.updatePieChart(); // Actualiza el gráfico de pastel
+    });
+
+    // Capturar parámetros de la ruta
+    this.route.paramMap.pipe(take(1)).subscribe(params => {
+      const dbfPathEncoded = params.get('dbfPath');
+      const clientNameEncoded = params.get('clientName');
+      if (dbfPathEncoded && clientNameEncoded) {
+        const dbfPath = decodeURIComponent(dbfPathEncoded);
+        this.clientName = decodeURIComponent(clientNameEncoded);
+        const fileName = dbfPath.split('/').pop()?.replace('.dbf', '') || '';
+        this.codigoCliente = fileName;
+        console.log('nomfich:', this.codigoCliente);
+        console.log('Nombre del cliente:', this.clientName);
+        this.sidebarService.setClientName(this.clientName);
+        this.iniciarProcesoPython(dbfPath);
       }
     });
+
+    // Inicializa las opciones de los gráficos
+    this.updateChartOptions();
+  }
+
+  ngOnDestroy() {
+    this.sidebarService.clearClientName();
+    if (this.sidebarSubscription) {
+      this.sidebarSubscription.unsubscribe();
+    }
   }
 
   // Método para iniciar el script de Python
-  iniciarProcesoPython() {
-    this.isLoading = true; // Indicar que está cargando
-    this.pythonService.procesarDbf().subscribe({
+  iniciarProcesoPython(dbfPath: string) {
+    this.isLoading = true;
+    this.pythonService.procesarDbf(dbfPath).subscribe({
       next: (response) => {
         console.log('Proceso de Python completado:', response.message);
-        // Recargar los datos después de que el script termine
         this.loadAvailableYears();
       },
       error: (err) => {
         console.error('Error al ejecutar el script de Python:', err);
-        this.isLoading = false; // Finalizar carga incluso si hay error
-        // Opcional: Manejar el error sin recargar datos
+        this.isLoading = false;
         this.loadAvailableYears(); // Cargar datos aunque falle el script
       }
     });
@@ -151,7 +179,6 @@ export class ClientesComponent implements OnInit {
 
   loadDataForYears(yearsToLoad: number[]) {
     this.isLoading = true;
-    // Inicializar isYearLoading para los años que se van a cargar
     yearsToLoad.forEach(year => {
       this.isYearLoading[year] = true;
     });
@@ -168,7 +195,7 @@ export class ClientesComponent implements OnInit {
       return;
     }
 
-    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, validYears).subscribe(
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, validYears, this.codigoCliente).subscribe(
       (data: { [year: string]: Movimiento[] }) => {
         validYears.forEach(year => {
           const filteredData = data[year] || [];
@@ -177,7 +204,7 @@ export class ClientesComponent implements OnInit {
             const basebas = parseFloat(mov.BASEBAS) || 0;
             return acc + basebas;
           }, 0);
-          this.isYearLoading[year] = false; // Marcar el año como cargado
+          this.isYearLoading[year] = false;
         });
 
         console.log('comparisonTotals:', this.comparisonTotals);
@@ -198,7 +225,6 @@ export class ClientesComponent implements OnInit {
   loadYearData(year: number) {
     if (year <= 0) return;
 
-    // Verificar si los datos ya están en caché
     if (this.comparisonTotals[year] !== undefined && this.comparisonData[year]) {
       console.log(`Datos para el año ${year} ya en caché, omitiendo consulta`);
       if (year === this.selectedYear) {
@@ -211,7 +237,8 @@ export class ClientesComponent implements OnInit {
 
     this.isLoading = true;
     console.log(`Consultando SQL para el año ${year}`);
-    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year]).subscribe({
+    // Pasar nomfich al servicio
+    this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [year], this.codigoCliente).subscribe({
       next: (data: { [year: string]: Movimiento[] }) => {
         this.comparisonData[year] = data[year] || [];
         this.comparisonTotals[year] = this.comparisonData[year].reduce((acc, mov) => {
@@ -230,10 +257,9 @@ export class ClientesComponent implements OnInit {
       error: (error) => {
         console.error(`Error al cargar datos para el año ${year}:`, error);
         this.isLoading = false;
-      }
-    });
+      },
+    }); // Asegúrate de que el objeto esté correctamente cerrado
   }
-
 
 
   // Nueva función para actualizar el gráfico después de cargar los datos
@@ -325,7 +351,14 @@ updatePieChartAfterDataLoad(year: number) {
           }
         }
       },
-      title: { display: true, text: `Total mensual - Cliente ${this.codigoCliente}`, font: { size: 16 }, padding: { top: 0, bottom: 14 } }
+      title: { display: true, text: `Total mensual - Cliente ${this.clientName}`,font: {
+        size: 18,           // Tamaño de la fuente
+        weight: 'bolder',     // Peso: 'normal', 'bold', 'bolder', 'lighter'
+        family: 'roboto',    // Familia de fuente (puedes usar cualquier fuente válida en CSS)
+        style: 'normal'     // Estilo: 'normal', 'italic', 'oblique'
+      },
+      color: '#333',        // Color del texto (opcional)
+       padding: { top: 0, bottom: 14 } }
     },
     layout: {
       padding: 7
@@ -406,19 +439,19 @@ updatePieChartAfterDataLoad(year: number) {
       }]
     };
 
+    // Actualiza solo el texto del título, manteniendo las otras propiedades
     this.chartOptionsPie = {
       ...this.chartOptionsPie,
       plugins: {
         ...this.chartOptionsPie?.plugins,
         title: {
-          display: true,
-          text: `Total mensual ${yearToShow} - Cliente ${this.codigoCliente}`,
-          font: { size: 16 },
-          padding: { top: 0, bottom: 14 }
+          ...this.chartOptionsPie?.plugins?.title,
+          text: `Total mensual ${yearToShow} - Cliente: ${this.clientName}`,
         }
       }
     };
   }
+
   updateComparisonCharts() {
     const importesPorMesComparison: { [year: number]: { [mes: string]: number } } = {};
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -476,28 +509,27 @@ updatePieChartAfterDataLoad(year: number) {
     this.isLoading = true;
     this.movimientosService.getAvailableYears().subscribe({
       next: (availableYears: number[]) => {
-        console.log('Años recibidos del backend:', availableYears); // Depuración
+        console.log('Años recibidos del backend:', availableYears);
 
-        this.selectedYear = this.AñoActual.getFullYear(); // Ej: 2025
-        this.defaultComparisonYear = this.selectedYear - 1; // Ej: 2024
+        this.selectedYear = this.AñoActual.getFullYear();
+        this.defaultComparisonYear = this.selectedYear - 1;
 
         console.log('selectedYear:', this.selectedYear);
         console.log('defaultComparisonYear:', this.defaultComparisonYear);
 
-        // Filtrar años inválidos (0, NaN, undefined) y limitar a los últimos 15 años válidos
         this.years = availableYears
           .filter(year => year > 0 && !isNaN(year) && year <= this.selectedYear)
           .sort((a, b) => b - a)
           .slice(0, 15);
 
-        console.log('Años filtrados para checkboxes:', this.years); // Depuración
+        console.log('Años filtrados para checkboxes:', this.years);
 
         this.selectedComparisonYears = [this.selectedYear, this.defaultComparisonYear].filter(year => year > 0);
         this.pieChartYear = this.selectedYear;
 
-        // Inicializar isYearLoading para los años iniciales
         this.isYearLoading[this.selectedYear] = true;
-        this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear]).subscribe({
+        // Pasar nomfich al servicio
+        this.movimientosService.getMovimientosPorClienteMultiple(this.codigoCliente, [this.selectedYear], this.codigoCliente).subscribe({
           next: (data: { [year: string]: Movimiento[] }) => {
             this.Movimiento = data[this.selectedYear] || [];
             this.totalImporteFacturas = this.Movimiento.reduce((acc, mov) => {
@@ -525,6 +557,136 @@ updatePieChartAfterDataLoad(year: number) {
     });
   }
 
+  updateChartOptions() {
+    const textColor = this.isDarkMode ? '#ffffff' : '#333333'; // Blanco para modo oscuro, oscuro para modo claro
+    const tickColor = this.isDarkMode ? '#e0e0e0' : '#666666'; // Color para las etiquetas de los ejes
+
+    // Opciones para el gráfico de pastel
+    this.chartOptionsPie = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const value = context.parsed;
+              const label = context.label || '';
+              const formattedValue = value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              return value === 0 ? `${label}: Sin datos` : `${label}: ${formattedValue} €`;
+            },
+          },
+          backgroundColor: this.isDarkMode ? '#1e293b' : '#ffffff',
+          titleColor: textColor,
+          bodyColor: textColor,
+        },
+        title: {
+          display: true,
+          text: `Total mensual ${this.pieChartYear} - Cliente: ${this.clientName}`,
+          font: {
+            size: 18,
+            weight: 'bold',
+            family: 'roboto',
+            style: 'normal',
+          },
+          color: textColor,
+          padding: { top: 0, bottom: 14 },
+        },
+        legend: {
+          display: true, // Habilita la leyenda
+          position: 'right', // Posición de la leyenda (puedes cambiar a 'top', 'bottom', 'left', etc.)
+          labels: {
+            color: textColor, // Color del texto de la leyenda
+            font: {
+              size: 14,
+              family: 'roboto',
+              style: 'normal',
+            },
+            padding: 10, // Espaciado entre elementos de la leyenda
+          },
+        },
+      },
+      layout: {
+        padding: 7,
+      },
+    };
+
+    // Opciones para el gráfico de líneas
+    this.chartOptionsLine = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: textColor } },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const value = context.parsed.y;
+              const formattedValue = value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              return `${formattedValue} €`;
+            },
+          },
+          backgroundColor: this.isDarkMode ? '#1e293b' : '#ffffff',
+          titleColor: textColor,
+          bodyColor: textColor,
+        },
+        title: {
+          display: true,
+          text: `Comparativa por Años - Cliente ${this.codigoCliente}`,
+          font: { size: 16 },
+          color: textColor,
+          padding: { top: 25, bottom: 10 },
+        },
+      },
+      scales: {
+        x: { ticks: { color: tickColor } },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: tickColor,
+            callback: (value) => `${value} €`,
+          },
+        },
+      },
+    };
+
+    // Opciones para el gráfico de barras
+    this.chartOptionsBar = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Comparativa por Años - Cliente ${this.codigoCliente}`,
+          font: { size: 16 },
+          color: textColor,
+          padding: { top: 25, bottom: 10 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const value = context.parsed.y;
+              const formattedValue = value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              return `${formattedValue} €`;
+            },
+          },
+          backgroundColor: this.isDarkMode ? '#1e293b' : '#ffffff',
+          titleColor: textColor,
+          bodyColor: textColor,
+        },
+        legend: { display: true, labels: { color: textColor } },
+      },
+      scales: {
+        x: { ticks: { color: tickColor } },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: tickColor,
+            callback: (value) => `${value} €`,
+          },
+        },
+      },
+    };
+  }
+
   generatePDF() {
     const doc = new jsPDF('p', 'mm', 'a4');
     const charts = document.querySelectorAll<HTMLElement>('.pie-container, .chart-toggle-container, .info-card');
@@ -540,7 +702,7 @@ updatePieChartAfterDataLoad(year: number) {
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(40);
-      doc.text(`Reporte de Gráficas - Cliente: ${this.codigoCliente}`, 105, 10, { align: 'center' });
+      doc.text(`Reporte de Gráficas - Cliente: ${this.clientName}`, 105, 10, { align: 'center' });
     };
 
     addBackgroundAndHeader();
@@ -566,7 +728,7 @@ updatePieChartAfterDataLoad(year: number) {
     });
 
     Promise.all(promises).then(() => {
-      doc.save(`cliente_${this.codigoCliente}_charts.pdf`);
+      doc.save(`cliente_${this.clientName}_charts.pdf`);
     }).catch((error) => {
       console.error('Error generando el PDF:', error);
     });

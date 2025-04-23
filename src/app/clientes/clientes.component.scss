@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 // Variables de color
 $primary-color: #1189a7;
@@ -11,15 +12,15 @@ $cancelled-color: #ca3645;
 
 .info-card {
   background-color: $white;
-  border-top: 4px solid #1189a7;
-  border-bottom: 4px solid #1189a7;
+  // border-top: 4px solid #1189a7;
+  // border-bottom: 4px solid #1189a7;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
-  width: 100%;
+  width: 108%;
   box-shadow: 0 4px 8px $shadow-color;
   transition: margin-left 0.21s ease-in-out, width 0.21s ease-in-out;
-  margin-left: -90px;
+  margin-left: -145px;
 
   &.sidebar-open {
     margin-left: -8px;
@@ -257,8 +258,8 @@ $cancelled-color: #ca3645;
 
   .pie-container {
     background-color: $white;
-    border-top: 4px solid #1189a7;
-    border-bottom: 4px solid #1189a7;
+    // border-top: 4px solid #1189a7;
+    // border-bottom: 4px solid #1189a7;
     border-radius: 12px;
     padding: 20px;
     width: 470px;
@@ -282,7 +283,8 @@ $cancelled-color: #ca3645;
     flex-direction: column;
     gap: 10px;
     background-color: $white;
-    border-top: 4px solid #1189a7;
+    // border-top: 4px solid #1189a7;
+    // border-bottom: 4px solid #1189a7;
     border-radius: 12px;
     padding: 20px;
     width: 1006px;
@@ -389,8 +391,8 @@ $cancelled-color: #ca3645;
 .line,
 .pie {
   background-color: $white;
-  border-top: 4px solid #25a9d9;
-  border-bottom: 4px solid #1189a7;
+  // border-top: 4px solid #25a9d9;
+  // border-bottom: 4px solid #1189a7;
   border-radius: 12px;
   padding: 20px;
   width: 470px;
@@ -516,5 +518,70 @@ $cancelled-color: #ca3645;
 
   &.sidebar-open {
     margin-left: -43px;
+  }
+}
+
+.dark-mode {
+
+
+  .card-item h3 {
+    color: white;
+  }
+
+  .card-item-actual h3{
+    color: white;
+  }
+
+  span{
+    color:white;
+  }
+
+  .chart-toggle-container,
+  .pie-container,
+  .bar,
+  .line,
+  .pie,
+  .client-selector select,
+  .year-selector select,
+  .checkbox-container,
+  .pdf-button {
+    background-color: #0f172a;
+    border-color: #3e95cd;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+
+    h3,
+    p,
+    span,
+    .percentage,
+    label,
+    select {
+      color: #ffffff;
+    }
+  }
+
+  .pdf-button {
+    background-color: #e67e22;
+
+    &:hover {
+      background-color: #d35400;
+      box-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+    }
+  }
+
+  .year-selector.comparison .toggle-label {
+    color: #87cefa;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+
+  .checkbox-item input[type="checkbox"]:disabled {
+    opacity: 0.3;
+  }
+
+  .vs {
+    color: #ccc;
   }
 }

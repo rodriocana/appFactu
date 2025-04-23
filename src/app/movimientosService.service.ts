@@ -1,6 +1,5 @@
-
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Movimiento } from './models/movimiento.model';
 
@@ -34,9 +33,14 @@ export class MovimientosService {
     return this.http.get<Movimiento[]>(`http://192.168.210.176:3000/api/movimientos/cliente/${codigo}?year=${year}`);
   }
 
-  // Método añadido para soportar múltiples años por cliente
-  getMovimientosPorClienteMultiple(codigo: string, years: number[]): Observable<{ [year: string]: Movimiento[] }> {
-    const yearsParam = years.join(',');
-    return this.http.get<{ [year: string]: Movimiento[] }>(`http://192.168.210.176:3000/api/movimientos/cliente/${codigo}?years=${yearsParam}`);
+  getMovimientosPorClienteMultiple(codigo: string, years: number[], nomfich?: string): Observable<{ [year: string]: Movimiento[] }> {
+    let params = new HttpParams().set('years', years.join(','));
+    if (nomfich) {
+      params = params.set('nomfich', nomfich);
+    }
+    return this.http.get<{ [year: string]: Movimiento[] }>(
+      `http://192.168.210.176:3000/api/movimientos/cliente/${codigo}`,
+      { params }
+    );
   }
 }

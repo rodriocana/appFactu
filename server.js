@@ -1,18 +1,16 @@
 const express = require('express');
 const mariadb = require('mariadb');
-const cors = require('cors'); // Importar cors
-
-const { exec } = require('child_process');
-const util = require('util');
+const cors = require('cors');
+const { spawn } = require('child_process'); // Usamos spawn en lugar de exec para mejor control
 const path = require('path');
+const fs = require('fs'); // Agregar esta línea
 
 const app = express();
 
-// Middleware para permitir el parseo de solicitudes JSON
+// Middleware
 app.use(cors());
-app.use(express.json()); // Este middleware es crucial para procesar req.body como JSON
-app.use(express.urlencoded({ extended: true })); // Para procesar datos de formularios si es necesario
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Configuración de la base de datos MariaDB
 const pool = mariadb.createPool({
@@ -25,34 +23,85 @@ const pool = mariadb.createPool({
   acquireTimeout: 5000
 });
 
-const execPromise = util.promisify(exec);
-// Endpoint para ejecutar el script de Python
+// Endpoint para procesar el archivo DBF
 app.post('/api/procesar-dbf', async (req, res) => {
   try {
-    // Path to the Python script
-    const scriptPath = path.join('C:', 'Users', 'Rodrigo', 'PyCharmMiscProject', 'script1.py');
+    const { dbf_path } = req.body;
+    console.log('Solicitud recibida:', req.body);
 
-    // Execute the Python script
-    const { stdout, stderr } = await execPromise(`py "${scriptPath}"`);
-
-    if (stderr) {
-      console.error('Error in Python script:', stderr);
-      return res.status(500).json({ error: 'Error executing Python script' });
+    // Validar que se proporcionó la ruta del DBF
+    if (!dbf_path) {
+      console.error('Falta dbf_path en la solicitud');
+      return res.status(400).json({ error: 'Se requiere la ruta del archivo DBF.' });
     }
 
-    // Log the script output for debugging (optional)
-    console.log('Python script output:', stdout);
+    // Validar que la ruta sea segura
+    // const baseDir = 'f:\\conta32\\temp';
+    const baseDir = 'c:\\conta32_lekue\\temp'; // Cambiar a la nueva ruta
+    const normalizedPath = path.normalize(dbf_path.replace(/\//g, '\\'));
+    console.log('Ruta normalizada:', normalizedPath);
+    if (!normalizedPath.startsWith(baseDir) || !normalizedPath.toLowerCase().endsWith('.dbf')) {
+      console.error('Ruta inválida:', normalizedPath);
+      return res.status(400).json({ error: 'Ruta de archivo inválida o no permitida.' });
+    }
 
-    // Send success response to Angular
-    res.json({ status: 'success', message: 'Python script executed successfully, data inserted into database' });
+    // Verificar que el archivo DBF existe
+    if (!fs.existsSync(normalizedPath)) {
+      console.error('Archivo DBF no encontrado:', normalizedPath);
+      return res.status(400).json({ error: `El archivo DBF ${normalizedPath} no existe.` });
+    }
+
+    // Ruta al script de Python
+    const pythonScript = path.join('C:', 'Users', 'Rodrigo', 'PyCharmMiscProject', 'dbf_to_sql.py');
+    const jsonOutputPath = normalizedPath.replace(/\.dbf$/i, '.json');
+
+    // Verificar que el script de Python existe
+    if (!fs.existsSync(pythonScript)) {
+      console.error('Script de Python no encontrado:', pythonScript);
+      return res.status(500).json({ error: `El script de Python ${pythonScript} no existe.` });
+    }
+
+    console.log('Ejecutando script:', pythonScript, 'con argumentos:', [normalizedPath, jsonOutputPath]);
+
+    // Usar la ruta completa de py.exe
+    const pythonExecutable = 'C:\\Users\\Rodrigo\\AppData\\Local\\Programs\\Python\\Launcher\\py.exe';
+    const pythonProcess = spawn(pythonExecutable, [pythonScript, normalizedPath, jsonOutputPath]);
+
+    let stdout = '';
+    let stderr = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      stdout += data.toString();
+      console.log('Python stdout:', data.toString());
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      stderr += data.toString();
+      console.error('Python stderr:', data.toString());
+    });
+
+    pythonProcess.on('close', (code) => {
+      console.log('Código de salida del script:', code);
+      if (code === 0) {
+        console.log('Script ejecutado exitosamente:', stdout);
+        res.json({
+          status: 'success',
+          message: `Archivo ${normalizedPath} procesado correctamente, datos insertados en la base de datos.`
+        });
+      } else {
+        console.error('Error en el script de Python (código:', code, '):', stderr);
+        res.status(500).json({ error: `Error ejecutando el script de Python: ${stderr}` });
+      }
+    });
+
   } catch (err) {
-    console.error('Error executing script:', err);
-    res.status(500).json({ error: 'Error processing the DBF file' });
+    console.error('Error procesando el archivo DBF:', err);
+    res.status(500).json({ error: `Error procesando el archivo DBF: ${err.message}` });
   }
 });
 
+// Endpoint para obtener movimientos
 app.get('/api/movimientos', (req, res) => {
-  // Soporte para múltiples años con ?years=2025,2024,2023
   if (req.query.years) {
     const years = req.query.years.split(',').map(year => year.trim());
     const conditions = years.map(year => `DOCFEC BETWEEN '${year}-01-01' AND '${year}-12-31'`).join(' OR ');
@@ -62,7 +111,7 @@ app.get('/api/movimientos', (req, res) => {
         console.log('Conectado a la base de datos');
         const query = `
           SELECT
-            CODTER, DOCFEC, BASEBAS.
+            CODTER, DOCFEC, BASEBAS,
             YEAR(DOCFEC) AS year
           FROM
             movalmc
@@ -78,11 +127,10 @@ app.get('/api/movimientos', (req, res) => {
                 CODTER: row.CODTER,
                 DOCFEC: row.DOCFEC,
                 BASEBAS: row.BASEBAS,
-
               });
               return acc;
             }, {});
-            res.json(groupedByYear); // Ej: { "2025": [...], "2024": [...], "2023": [...] }
+            res.json(groupedByYear);
           })
           .catch(err => {
             console.error('Error en la consulta:', err);
@@ -97,8 +145,6 @@ app.get('/api/movimientos', (req, res) => {
         res.status(500).json({ error: 'Error de conexión a la base de datos' });
       });
   } else {
-
-    // Soporte para el comportamiento actual con ?year=2024
     const year = req.query.year || '2024';
     const startDate = `${year}-01-01`;
     const endDate = `${year}-12-31`;
@@ -133,23 +179,22 @@ app.get('/api/movimientos', (req, res) => {
   }
 });
 
-// para coger los años del selector multiple
+// Endpoint para obtener años disponibles
 app.get('/api/years', (req, res) => {
   pool.getConnection()
     .then(conn => {
       console.log('Conectado a la base de datos');
       const query = `
-       SELECT DISTINCT YEAR(DOCFEC) AS year
+        SELECT DISTINCT YEAR(DOCFEC) AS year
         FROM movalmc
         WHERE DOCFEC IS NOT NULL
-    		ORDER BY year DESC
-
+        ORDER BY year DESC
       `;
 
       conn.query(query)
         .then(rows => {
-          const years = rows.map(row => row.year); // Extrae solo el valor del año
-          res.json(years); // Ej: [2025, 2024, 2023, 2022, 2021, ...]
+          const years = rows.map(row => row.year);
+          res.json(years);
         })
         .catch(err => {
           console.error('Error en la consulta:', err);
@@ -165,6 +210,7 @@ app.get('/api/years', (req, res) => {
     });
 });
 
+// Endpoint para obtener código de cliente
 app.get('/api/codigoCliente', (req, res) => {
   const year = req.query.year || '2024';
   const startDate = `${year}-01-01`;
@@ -178,8 +224,8 @@ app.get('/api/codigoCliente', (req, res) => {
           CODTER
         FROM
           movalmc
-          where docfec >= ? and docfec <= ?
-          `;
+        WHERE DOCFEC >= ? AND DOCFEC <= ?
+      `;
 
       conn.query(query, [startDate, endDate])
         .then(rows => {
@@ -199,13 +245,19 @@ app.get('/api/codigoCliente', (req, res) => {
     });
 });
 
-
-// IMPORTANTE, se usa esta api para sacar los datos de cada cliente por fecha
+// Endpoint para obtener movimientos por cliente
 app.get('/api/movimientos/cliente/:codigo', (req, res) => {
-  const codigo = req.params.codigo;
+  const nomfich = req.query.nomfich; // Obtener nomfich desde los query params
+
+  if (!nomfich) {
+    return res.status(400).json({ error: 'El parámetro nomfich es requerido' });
+  }
 
   if (req.query.years) {
-    const years = req.query.years.split(',').map(year => parseInt(year.trim())).filter(year => !isNaN(year));
+    const years = req.query.years
+      .split(',')
+      .map(year => parseInt(year.trim()))
+      .filter(year => !isNaN(year));
 
     if (years.length === 0) {
       return res.status(400).json({ error: 'No se proporcionaron años válidos' });
@@ -213,15 +265,19 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
 
     pool.getConnection()
       .then(conn => {
+        // Consulta SQL actualizada sin CODTER
         const query = `
           SELECT CODTER, DOCFEC, BASEBAS, YEAR(DOCFEC) AS year
           FROM movalmc
-          WHERE CODTER = ? AND YEAR(DOCFEC) IN (?)
+          WHERE YEAR(DOCFEC) IN (?) AND nomfich = ?
           ORDER BY DOCFEC
         `;
+        const queryParams = [years, nomfich];
 
-        console.log('Consulta SQL:', query.replace('?', `'${codigo}'`).replace('?', years.join(',')));
-        conn.query(query, [codigo, years])
+        console.log('Consulta SQL:', query.replace('(?)', `(${years.join(',')})`));
+        console.log('Parámetros:', queryParams);
+
+        conn.query(query, queryParams)
           .then(rows => {
             const groupedByYear = rows.reduce((acc, row) => {
               const year = row.year;
@@ -252,13 +308,19 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
 
     pool.getConnection()
       .then(conn => {
+        // Consulta SQL para un solo año sin CODTER
         const query = `
           SELECT CODTER, DOCFEC, BASEBAS
           FROM movalmc
-          WHERE CODTER = ? AND DOCFEC BETWEEN ? AND ?
+          WHERE DOCFEC BETWEEN ? AND ? AND nomfich = ?
+          ORDER BY DOCFEC
         `;
+        const queryParams = [startDate, endDate, nomfich];
 
-        conn.query(query, [codigo, startDate, endDate])
+        console.log('Consulta SQL:', query);
+        console.log('Parámetros:', queryParams);
+
+        conn.query(query, queryParams)
           .then(rows => {
             res.json(rows);
           })
