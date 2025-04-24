@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MovimientosService } from '../movimientosService.service';
+import { FacfecMovimientosService } from '../facfec-movimientos.service';
 import { Movimiento } from '../models/movimiento.model';
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
@@ -28,9 +28,10 @@ export class DashboardComponent implements OnInit {
   clients: any[] = [];
   comparisonData: Movimiento[] = [];
   isSidebarOpen = false;
+  nomfich: string = 'TMP091505'; // Valor fijo para nomfich, ajusta según tu lógica
 
   constructor(
-    private movimientosService: MovimientosService,
+    private movimientosService: FacfecMovimientosService,
     private sidebarService: SidebarService
   ) {}
 
@@ -58,7 +59,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadData(year: number) {
-    this.movimientosService.getMovimientos(year).subscribe((data: Movimiento[]) => {
+    this.movimientosService.getMovimientosByFacfec(year, this.nomfich).subscribe((data: Movimiento[]) => {
       this.Movimiento = this.selectedClient
         ? data.filter(mov => mov.CODTER === this.selectedClient)
         : data;
@@ -70,12 +71,12 @@ export class DashboardComponent implements OnInit {
         return acc + (basebas + imptbas + recbas);
       }, 0);
       this.importe = this.Movimiento.reduce((acc, mov) => acc + parseFloat(mov.BASEBAS), 0);
-      this.updateCharts(); // Actualiza todas las gráficas, incluida la de pastel
+      this.updateCharts();
     });
   }
 
   loadComparisonData(year: number) {
-    this.movimientosService.getMovimientos(year).subscribe((data: Movimiento[]) => {
+    this.movimientosService.getMovimientosByFacfec(year, this.nomfich).subscribe((data: Movimiento[]) => {
       this.comparisonData = this.selectedClient
         ? data.filter(mov => mov.CODTER === this.selectedClient)
         : data;
@@ -86,7 +87,7 @@ export class DashboardComponent implements OnInit {
         const recbas = parseFloat(mov.RECBAS) || 0;
         return acc + (basebas + imptbas + recbas);
       }, 0);
-      this.updateComparisonCharts(); // Actualiza solo líneas y barras, no pastel
+      this.updateComparisonCharts();
     });
   }
 
@@ -130,7 +131,7 @@ export class DashboardComponent implements OnInit {
           }
         }
       },
-      title: { display: true, text: 'Comparativa por Años', font: { size: 16 }, padding: { top: 10, bottom: 10 } }
+      title: { display: true, text: 'Comparativa por Años (FACFEC)', font: { size: 16 }, padding: { top: 10, bottom: 10 } }
     },
     scales: {
       x: {},
@@ -158,7 +159,7 @@ export class DashboardComponent implements OnInit {
   chartOptionsBar: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
-      title: { display: true, text: 'Comparativa por Años', font: { size: 16 }, padding: { top: 10, bottom: 10 } },
+      title: { display: true, text: 'Comparativa por Años (FACFEC)', font: { size: 16 }, padding: { top: 10, bottom: 10 } },
       tooltip: {
         callbacks: {
           label: (context) => {
@@ -175,7 +176,6 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  // Actualiza todas las gráficas (incluida la de pastel)
   updateCharts() {
     const importesPorMesPrimary: { [mes: string]: number } = {};
     const importesPorMesComparison: { [mes: string]: number } = {};
@@ -187,7 +187,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.Movimiento.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
+      const fecha = new Date(mov.FACFEC);
       const mes = fecha.getMonth();
       const mesNombre = meses[mes];
       const basebas = parseFloat(mov.BASEBAS) || 0;
@@ -197,7 +197,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.comparisonData.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
+      const fecha = new Date(mov.FACFEC);
       const mes = fecha.getMonth();
       const mesNombre = meses[mes];
       const basebas = parseFloat(mov.BASEBAS) || 0;
@@ -210,7 +210,6 @@ export class DashboardComponent implements OnInit {
     const valoresPrimary = Object.values(importesPorMesPrimary);
     const valoresComparison = Object.values(importesPorMesComparison);
 
-    // Gráfica de líneas
     this.chartDataLine = {
       labels: labels,
       datasets: [
@@ -219,7 +218,6 @@ export class DashboardComponent implements OnInit {
       ]
     };
 
-    // Gráfica de barras
     if (this.selectedYear === this.selectedYearComparison) {
       this.chartDataBar = {
         labels: labels,
@@ -253,9 +251,8 @@ export class DashboardComponent implements OnInit {
           }
         ]
       };
-    };
+    }
 
-    // Gráfica de pastel (solo año principal)
     this.chartDataPie = {
       labels: labels,
       datasets: [{
@@ -267,7 +264,6 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  // Actualiza solo las gráficas de comparación (líneas y barras)
   updateComparisonCharts() {
     const importesPorMesPrimary: { [mes: string]: number } = {};
     const importesPorMesComparison: { [mes: string]: number } = {};
@@ -279,7 +275,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.Movimiento.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
+      const fecha = new Date(mov.FACFEC);
       const mes = fecha.getMonth();
       const mesNombre = meses[mes];
       const basebas = parseFloat(mov.BASEBAS) || 0;
@@ -289,7 +285,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.comparisonData.forEach((mov) => {
-      const fecha = new Date(mov.DOCFEC);
+      const fecha = new Date(mov.FACFEC);
       const mes = fecha.getMonth();
       const mesNombre = meses[mes];
       const basebas = parseFloat(mov.BASEBAS) || 0;
@@ -302,7 +298,6 @@ export class DashboardComponent implements OnInit {
     const valoresPrimary = Object.values(importesPorMesPrimary);
     const valoresComparison = Object.values(importesPorMesComparison);
 
-    // Gráfica de líneas
     this.chartDataLine = {
       labels: labels,
       datasets: [
@@ -311,7 +306,6 @@ export class DashboardComponent implements OnInit {
       ]
     };
 
-    // Gráfica de barras
     if (this.selectedYear === this.selectedYearComparison) {
       this.chartDataBar = {
         labels: labels,
@@ -345,7 +339,7 @@ export class DashboardComponent implements OnInit {
           }
         ]
       };
-    };
+    }
   }
 
   generatePDF() {
@@ -372,7 +366,7 @@ export class DashboardComponent implements OnInit {
     });
 
     Promise.all(promises).then(() => {
-      doc.save('dashboard_charts.pdf');
+      doc.save('dashboard_facfec_charts.pdf');
     }).catch((error) => {
       console.error('Error generando el PDF:', error);
     });

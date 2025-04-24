@@ -337,6 +337,104 @@ app.get('/api/movimientos/cliente/:codigo', (req, res) => {
   }
 });
 
+
+
+// Endpoint para obtener movimientos por FACFEC y nomfich
+app.get('/api/movimientos-facfec', (req, res) => {
+  // Validar que nomfich esté presente
+  const nomfich = req.query.nomfich;
+  if (!nomfich) {
+    console.error('Falta el parámetro nomfich en la solicitud');
+    return res.status(400).json({ error: 'El parámetro nomfich es requerido' });
+  }
+
+  if (req.query.years) {
+    const years = req.query.years.split(',').map(year => year.trim());
+    const conditions = years.map(year => `FACFEC BETWEEN '${year}-01-01' AND '${year}-12-31'`).join(' OR ');
+
+    pool.getConnection()
+      .then(conn => {
+        console.log('Conectado a la base de datos');
+        const query = `
+          SELECT
+            CODTER, FACFEC, BASEBAS,
+            YEAR(FACFEC) AS year
+          FROM
+            movalmc
+          WHERE (${conditions}) AND nomfich = ?
+        `;
+        // Mostrar la consulta SQL en la consola con nomfich reemplazado
+        const formattedQuery = query.replace('?', `'${nomfich}'`);
+        console.log('Consulta SQL ejecutada:', formattedQuery);
+
+        conn.query(query, [nomfich])
+          .then(rows => {
+            const groupedByYear = rows.reduce((acc, row) => {
+              const year = row.year;
+              if (!acc[year]) acc[year] = [];
+              acc[year].push({
+                CODTER: row.CODTER,
+                FACFEC: row.FACFEC,
+                BASEBAS: row.BASEBAS,
+              });
+              return acc;
+            }, {});
+            res.json(groupedByYear);
+          })
+          .catch(err => {
+            console.error('Error en la consulta:', err);
+            res.status(500).json({ error: 'Error al obtener los datos' });
+          })
+          .finally(() => {
+            conn.end();
+          });
+      })
+      .catch(err => {
+        console.error('Error de conexión:', err);
+        res.status(500).json({ error: 'Error de conexión a la base de datos' });
+      });
+  } else {
+    const year = req.query.year || '2024';
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    pool.getConnection()
+      .then(conn => {
+        console.log('Conectado a la base de datos');
+        const query = `
+          SELECT
+            CODTER, FACFEC, BASEBAS
+          FROM
+            movalmc
+          WHERE FACFEC >= ? AND FACFEC <= ? AND nomfich = ?
+        `;
+        // Mostrar la consulta SQL en la consola con los parámetros reemplazados
+        const formattedQuery = query
+          .replace('?', `'${startDate}'`)
+          .replace('?', `'${endDate}'`)
+          .replace('?', `'${nomfich}'`);
+        console.log('Consulta SQL ejecutada:', formattedQuery);
+
+        conn.query(query, [startDate, endDate, nomfich])
+          .then(rows => {
+            res.json(rows);
+          })
+          .catch(err => {
+            console.error('Error en la consulta:', err);
+            res.status(500).json({ error: 'Error al obtener los datos' });
+          })
+          .finally(() => {
+            conn.end();
+          });
+      })
+      .catch(err => {
+        console.error('Error de conexión:', err);
+        res.status(500).json({ error: 'Error de conexión a la base de datos' });
+      });
+  }
+});
+
+
 // Iniciar el servidor
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://192.168.210.176:3000');

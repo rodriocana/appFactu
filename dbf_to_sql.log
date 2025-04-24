@@ -8,3 +8,301 @@
 2025-04-23 13:50:31,109 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp135021.dbf. Total registros: 304
 2025-04-23 13:50:31,109 - INFO - Conexión a la base de datos cerrada.
 2025-04-23 13:50:31,109 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp135021.dbf. Tiempo total: 0:00:00.441695
+2025-04-23 13:57:49,827 - INFO - Nueva ejecución c6a3bf85 para el archivo DBF: c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:57:49,827 - INFO - Nombre del archivo extraído: tmp135021
+2025-04-23 13:57:49,940 - INFO - Se encontraron 304 registros con nomfich = tmp135021. Eliminando...
+2025-04-23 13:57:49,956 - INFO - Registros con nomfich = tmp135021 eliminados.
+2025-04-23 13:57:49,956 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 13:57:49,958 - INFO - Codepage detectado: cp850
+2025-04-23 13:57:49,959 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 13:57:50,016 - INFO - Registros totales: 304, Registros únicos (sin borrados): 304
+2025-04-23 13:57:50,258 - INFO - Insertados 304 registros del archivo c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:57:50,285 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp135021.dbf. Total registros: 304
+2025-04-23 13:57:50,285 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 13:57:50,285 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp135021.dbf. Tiempo total: 0:00:00.457241
+2025-04-23 13:58:00,374 - INFO - Nueva ejecución 02876c72 para el archivo DBF: c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:58:00,374 - INFO - Nombre del archivo extraído: tmp135021
+2025-04-23 13:58:00,434 - INFO - Se encontraron 304 registros con nomfich = tmp135021. Eliminando...
+2025-04-23 13:58:00,436 - INFO - Registros con nomfich = tmp135021 eliminados.
+2025-04-23 13:58:00,436 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 13:58:00,436 - INFO - Codepage detectado: cp850
+2025-04-23 13:58:00,444 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 13:58:00,492 - INFO - Registros totales: 304, Registros únicos (sin borrados): 304
+2025-04-23 13:58:00,727 - INFO - Insertados 304 registros del archivo c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:58:00,741 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp135021.dbf. Total registros: 304
+2025-04-23 13:58:00,756 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 13:58:00,756 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp135021.dbf. Tiempo total: 0:00:00.381849
+2025-04-23 13:58:37,458 - INFO - Nueva ejecución 46563d12 para el archivo DBF: c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:58:37,458 - INFO - Nombre del archivo extraído: tmp135021
+2025-04-23 13:58:37,526 - INFO - Se encontraron 304 registros con nomfich = tmp135021. Eliminando...
+2025-04-23 13:58:37,526 - INFO - Registros con nomfich = tmp135021 eliminados.
+2025-04-23 13:58:37,526 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 13:58:37,526 - INFO - Codepage detectado: cp850
+2025-04-23 13:58:37,534 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 13:58:37,583 - INFO - Registros totales: 304, Registros únicos (sin borrados): 304
+2025-04-23 13:58:37,829 - INFO - Insertados 304 registros del archivo c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 13:58:37,866 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp135021.dbf. Total registros: 304
+2025-04-23 13:58:37,866 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 13:58:37,866 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp135021.dbf. Tiempo total: 0:00:00.408624
+2025-04-23 14:13:48,852 - INFO - Nueva ejecución 2c1597dd para el archivo DBF: c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 14:13:48,852 - INFO - Nombre del archivo extraído: tmp135021
+2025-04-23 14:13:48,936 - INFO - Se encontraron 304 registros con nomfich = tmp135021. Eliminando...
+2025-04-23 14:13:48,937 - INFO - Registros con nomfich = tmp135021 eliminados.
+2025-04-23 14:13:48,937 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 14:13:48,937 - INFO - Codepage detectado: cp850
+2025-04-23 14:13:48,937 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 14:13:48,993 - INFO - Registros totales: 304, Registros únicos (sin borrados): 304
+2025-04-23 14:13:49,232 - INFO - Insertados 304 registros del archivo c:\conta32_lekue\temp\tmp135021.dbf
+2025-04-23 14:13:49,253 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp135021.dbf. Total registros: 304
+2025-04-23 14:13:49,253 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 14:13:49,253 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp135021.dbf. Tiempo total: 0:00:00.401474
+2025-04-23 15:00:34,934 - INFO - Nueva ejecución 8e55c2b6 para el archivo DBF: c:\conta32_lekue\temp\tmp145953.dbf
+2025-04-23 15:00:34,937 - INFO - Nombre del archivo extraído: tmp145953
+2025-04-23 15:00:35,063 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 15:00:35,063 - INFO - Codepage detectado: cp850
+2025-04-23 15:00:35,064 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 15:00:35,164 - INFO - Registros totales: 578, Registros únicos (sin borrados): 578
+2025-04-23 15:00:35,410 - INFO - Insertados 578 registros del archivo c:\conta32_lekue\temp\tmp145953.dbf
+2025-04-23 15:00:35,442 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp145953.dbf. Total registros: 578
+2025-04-23 15:00:35,443 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 15:00:35,443 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp145953.dbf. Tiempo total: 0:00:00.509151
+2025-04-23 17:20:32,935 - INFO - Nueva ejecución 8113dda4 para el archivo DBF: c:\conta32_lekue\temp\tmp172020.dbf
+2025-04-23 17:20:32,935 - INFO - Nombre del archivo extraído: tmp172020
+2025-04-23 17:20:33,133 - INFO - Preparando inserción en la tabla movalmc
+2025-04-23 17:20:33,133 - INFO - Codepage detectado: cp850
+2025-04-23 17:20:33,140 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-23 17:20:33,360 - INFO - Registros totales: 1310, Registros únicos (sin borrados): 1310
+2025-04-23 17:20:33,682 - INFO - Insertados 1310 registros del archivo c:\conta32_lekue\temp\tmp172020.dbf
+2025-04-23 17:20:33,732 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp172020.dbf. Total registros: 1310
+2025-04-23 17:20:33,733 - INFO - Conexión a la base de datos cerrada.
+2025-04-23 17:20:33,733 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp172020.dbf. Tiempo total: 0:00:00.798100
+2025-04-24 09:15:11,124 - INFO - Nueva ejecución 1e9b932a para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:15:11,124 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 09:15:11,211 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 09:15:11,211 - INFO - Codepage detectado: cp850
+2025-04-24 09:15:11,214 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 09:15:11,259 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 09:15:11,576 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:15:11,607 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 09:15:11,607 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 09:15:11,607 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.483338
+2025-04-24 09:18:32,741 - INFO - Nueva ejecución 226bf9ab para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:18:32,741 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 09:18:32,803 - INFO - Se encontraron 249 registros con nomfich = tmp091505. Eliminando...
+2025-04-24 09:18:32,806 - INFO - Registros con nomfich = tmp091505 eliminados.
+2025-04-24 09:18:32,806 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 09:18:32,807 - INFO - Codepage detectado: cp850
+2025-04-24 09:18:32,811 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 09:18:32,856 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 09:18:33,070 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:18:33,087 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 09:18:33,087 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 09:18:33,087 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.345650
+2025-04-24 09:22:58,221 - INFO - Nueva ejecución b46776b5 para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:22:58,221 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 09:22:58,282 - INFO - Se encontraron 249 registros con nomfich = tmp091505. Eliminando...
+2025-04-24 09:22:58,285 - INFO - Registros con nomfich = tmp091505 eliminados.
+2025-04-24 09:22:58,285 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 09:22:58,285 - INFO - Codepage detectado: cp850
+2025-04-24 09:22:58,285 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 09:22:58,333 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 09:22:58,549 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:22:58,565 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 09:22:58,565 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 09:22:58,565 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.344013
+2025-04-24 09:27:02,242 - INFO - Nueva ejecución 9e91348d para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:27:02,242 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 09:27:02,375 - INFO - Se encontraron 249 registros con nomfich = tmp091505. Eliminando...
+2025-04-24 09:27:02,375 - INFO - Registros con nomfich = tmp091505 eliminados.
+2025-04-24 09:27:02,375 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 09:27:02,375 - INFO - Codepage detectado: cp850
+2025-04-24 09:27:02,392 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 09:27:02,435 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 09:27:02,643 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:27:02,678 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 09:27:02,679 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 09:27:02,679 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.437672
+2025-04-24 09:27:26,208 - INFO - Nueva ejecución 30111763 para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:27:26,208 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 09:27:26,268 - INFO - Se encontraron 249 registros con nomfich = tmp091505. Eliminando...
+2025-04-24 09:27:26,268 - INFO - Registros con nomfich = tmp091505 eliminados.
+2025-04-24 09:27:26,268 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 09:27:26,268 - INFO - Codepage detectado: cp850
+2025-04-24 09:27:26,278 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 09:27:26,323 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 09:27:26,539 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 09:27:26,570 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 09:27:26,571 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 09:27:26,571 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.362856
+2025-04-24 10:14:05,561 - INFO - Nueva ejecución 383cd6b1 para el archivo DBF: c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:05,561 - INFO - Nombre del archivo extraído: tmp101401
+2025-04-24 10:14:05,679 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:14:05,679 - INFO - Codepage detectado: cp850
+2025-04-24 10:14:05,695 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:14:05,695 - INFO - Registros totales: 20, Registros únicos (sin borrados): 20
+2025-04-24 10:14:05,917 - INFO - Insertados 20 registros del archivo c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:05,947 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101401.dbf. Total registros: 20
+2025-04-24 10:14:05,948 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:14:05,948 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101401.dbf. Tiempo total: 0:00:00.387440
+2025-04-24 10:14:32,578 - INFO - Nueva ejecución 97d48d69 para el archivo DBF: c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:32,578 - INFO - Nombre del archivo extraído: tmp101401
+2025-04-24 10:14:32,644 - INFO - Se encontraron 20 registros con nomfich = tmp101401. Eliminando...
+2025-04-24 10:14:32,647 - INFO - Registros con nomfich = tmp101401 eliminados.
+2025-04-24 10:14:32,647 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:14:32,648 - INFO - Codepage detectado: cp850
+2025-04-24 10:14:32,651 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:14:32,651 - INFO - Registros totales: 20, Registros únicos (sin borrados): 20
+2025-04-24 10:14:32,862 - INFO - Insertados 20 registros del archivo c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:32,878 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101401.dbf. Total registros: 20
+2025-04-24 10:14:32,878 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:14:32,878 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101401.dbf. Tiempo total: 0:00:00.300036
+2025-04-24 10:14:50,463 - INFO - Nueva ejecución 1011cd4f para el archivo DBF: c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:50,463 - INFO - Nombre del archivo extraído: tmp101401
+2025-04-24 10:14:50,533 - INFO - Se encontraron 20 registros con nomfich = tmp101401. Eliminando...
+2025-04-24 10:14:50,533 - INFO - Registros con nomfich = tmp101401 eliminados.
+2025-04-24 10:14:50,533 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:14:50,533 - INFO - Codepage detectado: cp850
+2025-04-24 10:14:50,547 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:14:50,551 - INFO - Registros totales: 20, Registros únicos (sin borrados): 20
+2025-04-24 10:14:50,778 - INFO - Insertados 20 registros del archivo c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:50,821 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101401.dbf. Total registros: 20
+2025-04-24 10:14:50,822 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:14:50,822 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101401.dbf. Tiempo total: 0:00:00.358799
+2025-04-24 10:14:54,411 - INFO - Nueva ejecución 1a65cee3 para el archivo DBF: c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:54,411 - INFO - Nombre del archivo extraído: tmp101401
+2025-04-24 10:14:54,481 - INFO - Se encontraron 20 registros con nomfich = tmp101401. Eliminando...
+2025-04-24 10:14:54,483 - INFO - Registros con nomfich = tmp101401 eliminados.
+2025-04-24 10:14:54,483 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:14:54,484 - INFO - Codepage detectado: cp850
+2025-04-24 10:14:54,484 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:14:54,494 - INFO - Registros totales: 20, Registros únicos (sin borrados): 20
+2025-04-24 10:14:54,695 - INFO - Insertados 20 registros del archivo c:\conta32_lekue\temp\tmp101401.dbf
+2025-04-24 10:14:54,724 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101401.dbf. Total registros: 20
+2025-04-24 10:14:54,725 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:14:54,725 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101401.dbf. Tiempo total: 0:00:00.314297
+2025-04-24 10:15:56,042 - INFO - Nueva ejecución 468a3dcb para el archivo DBF: c:\conta32_lekue\temp\tmp101542.dbf
+2025-04-24 10:15:56,042 - INFO - Nombre del archivo extraído: tmp101542
+2025-04-24 10:15:56,113 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:15:56,113 - INFO - Codepage detectado: cp850
+2025-04-24 10:15:56,119 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:15:56,122 - INFO - Registros totales: 20, Registros únicos (sin borrados): 20
+2025-04-24 10:15:56,340 - INFO - Insertados 20 registros del archivo c:\conta32_lekue\temp\tmp101542.dbf
+2025-04-24 10:15:56,372 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101542.dbf. Total registros: 20
+2025-04-24 10:15:56,373 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:15:56,374 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101542.dbf. Tiempo total: 0:00:00.332125
+2025-04-24 10:16:12,110 - INFO - Nueva ejecución 87e7bb6b para el archivo DBF: c:\conta32_lekue\temp\tmp101608.dbf
+2025-04-24 10:16:12,110 - INFO - Nombre del archivo extraído: tmp101608
+2025-04-24 10:16:12,168 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:16:12,168 - INFO - Codepage detectado: cp850
+2025-04-24 10:16:12,174 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:16:12,192 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:16:12,425 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp101608.dbf
+2025-04-24 10:16:12,453 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101608.dbf. Total registros: 104
+2025-04-24 10:16:12,454 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:16:12,454 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101608.dbf. Tiempo total: 0:00:00.344232
+2025-04-24 10:16:32,709 - INFO - Nueva ejecución c4d546b6 para el archivo DBF: c:\conta32_lekue\temp\tmp101608.dbf
+2025-04-24 10:16:32,709 - INFO - Nombre del archivo extraído: tmp101608
+2025-04-24 10:16:32,781 - INFO - Se encontraron 104 registros con nomfich = tmp101608. Eliminando...
+2025-04-24 10:16:32,782 - INFO - Registros con nomfich = tmp101608 eliminados.
+2025-04-24 10:16:32,783 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:16:32,783 - INFO - Codepage detectado: cp850
+2025-04-24 10:16:32,792 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:16:32,811 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:16:33,098 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp101608.dbf
+2025-04-24 10:16:33,141 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101608.dbf. Total registros: 104
+2025-04-24 10:16:33,144 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:16:33,144 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101608.dbf. Tiempo total: 0:00:00.434960
+2025-04-24 10:16:44,561 - INFO - Nueva ejecución bec55e7a para el archivo DBF: c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 10:16:44,561 - INFO - Nombre del archivo extraído: tmp091505
+2025-04-24 10:16:44,675 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:16:44,675 - INFO - Codepage detectado: cp850
+2025-04-24 10:16:44,692 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:16:44,762 - INFO - Registros totales: 249, Registros únicos (sin borrados): 249
+2025-04-24 10:16:44,999 - INFO - Insertados 249 registros del archivo c:\conta32_lekue\temp\tmp091505.dbf
+2025-04-24 10:16:45,036 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp091505.dbf. Total registros: 249
+2025-04-24 10:16:45,037 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:16:45,037 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp091505.dbf. Tiempo total: 0:00:00.475571
+2025-04-24 10:17:17,591 - INFO - Nueva ejecución 0b939af3 para el archivo DBF: c:\conta32_lekue\temp\tmp101713.dbf
+2025-04-24 10:17:17,591 - INFO - Nombre del archivo extraído: tmp101713
+2025-04-24 10:17:17,658 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:17:17,658 - INFO - Codepage detectado: cp850
+2025-04-24 10:17:17,664 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:17:17,675 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:17:17,894 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp101713.dbf
+2025-04-24 10:17:17,924 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101713.dbf. Total registros: 104
+2025-04-24 10:17:17,925 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:17:17,925 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101713.dbf. Tiempo total: 0:00:00.333881
+2025-04-24 10:19:14,721 - INFO - Nueva ejecución 5d4eea5a para el archivo DBF: c:\conta32_lekue\temp\tmp101911.dbf
+2025-04-24 10:19:14,722 - INFO - Nombre del archivo extraído: tmp101911
+2025-04-24 10:19:14,839 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:19:14,839 - INFO - Codepage detectado: cp850
+2025-04-24 10:19:14,839 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:19:14,854 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:19:15,078 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp101911.dbf
+2025-04-24 10:19:15,105 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101911.dbf. Total registros: 104
+2025-04-24 10:19:15,106 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:19:15,106 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101911.dbf. Tiempo total: 0:00:00.385280
+2025-04-24 10:19:27,754 - INFO - Nueva ejecución 93e36f59 para el archivo DBF: c:\conta32_lekue\temp\tmp101911.dbf
+2025-04-24 10:19:27,754 - INFO - Nombre del archivo extraído: tmp101911
+2025-04-24 10:19:27,825 - INFO - Se encontraron 104 registros con nomfich = tmp101911. Eliminando...
+2025-04-24 10:19:27,826 - INFO - Registros con nomfich = tmp101911 eliminados.
+2025-04-24 10:19:27,826 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:19:27,826 - INFO - Codepage detectado: cp850
+2025-04-24 10:19:27,826 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:19:27,840 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:19:28,087 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp101911.dbf
+2025-04-24 10:19:28,113 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp101911.dbf. Total registros: 104
+2025-04-24 10:19:28,114 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:19:28,114 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp101911.dbf. Tiempo total: 0:00:00.360470
+2025-04-24 10:35:01,284 - INFO - Nueva ejecución 67f29001 para el archivo DBF: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:35:01,284 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:35:01,284 - INFO - Nombre del archivo extraído: tmp103457
+2025-04-24 10:35:01,284 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp103457.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp103457.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:35:01,284 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp103457.dbf. Tiempo total: 0:00:00
+2025-04-24 10:41:57,524 - INFO - Nueva ejecución 759a9114 para el archivo DBF: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:41:57,525 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:41:57,525 - INFO - Nombre del archivo extraído: tmp103457
+2025-04-24 10:41:57,525 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp103457.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp103457.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:41:57,525 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp103457.dbf. Tiempo total: 0:00:00.001186
+2025-04-24 10:41:58,170 - INFO - Nueva ejecución b77589dc para el archivo DBF: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:41:58,170 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:41:58,170 - INFO - Nombre del archivo extraído: tmp103457
+2025-04-24 10:41:58,170 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp103457.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp103457.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:41:58,170 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp103457.dbf. Tiempo total: 0:00:00
+2025-04-24 10:42:18,824 - INFO - Nueva ejecución 5d5d846b para el archivo DBF: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:42:18,824 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp103457.dbf
+2025-04-24 10:42:18,824 - INFO - Nombre del archivo extraído: tmp103457
+2025-04-24 10:42:18,824 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp103457.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp103457.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:42:18,824 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp103457.dbf. Tiempo total: 0:00:00
+2025-04-24 10:43:40,431 - INFO - Nueva ejecución b8f69f02 para el archivo DBF: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:43:40,431 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:43:40,431 - INFO - Nombre del archivo extraído: tmp104336
+2025-04-24 10:43:40,431 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp104336.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp104336.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:43:40,431 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp104336.dbf. Tiempo total: 0:00:00.000840
+2025-04-24 10:43:48,201 - INFO - Nueva ejecución 0d17ce70 para el archivo DBF: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:43:48,201 - INFO - Ruta decodificada: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:43:48,201 - INFO - Nombre del archivo extraído: tmp104336
+2025-04-24 10:43:48,201 - ERROR - Error en el proceso para c:\conta32_lekue\temp\tmp104336.dbf: No se pudo determinar la tabla para la ruta c:\conta32_lekue\temp\tmp104336.dbf. La ruta debe contener 'clientes' o 'pedidos'.
+2025-04-24 10:43:48,205 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp104336.dbf. Tiempo total: 0:00:00.003190
+2025-04-24 10:46:03,464 - INFO - Nueva ejecución 9661f34b para el archivo DBF: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:46:03,464 - INFO - Nombre del archivo extraído: tmp104336
+2025-04-24 10:46:03,806 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:46:03,806 - INFO - Codepage detectado: cp850
+2025-04-24 10:46:03,820 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:46:03,847 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:46:04,214 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:46:04,246 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp104336.dbf. Total registros: 104
+2025-04-24 10:46:04,250 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:46:04,250 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp104336.dbf. Tiempo total: 0:00:00.789129
+2025-04-24 10:46:28,241 - INFO - Nueva ejecución 37585b5e para el archivo DBF: c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:46:28,241 - INFO - Nombre del archivo extraído: tmp104336
+2025-04-24 10:46:28,302 - INFO - Se encontraron 104 registros con nomfich = tmp104336. Eliminando...
+2025-04-24 10:46:28,302 - INFO - Registros con nomfich = tmp104336 eliminados.
+2025-04-24 10:46:28,302 - INFO - Preparando inserción en la tabla movalmc
+2025-04-24 10:46:28,302 - INFO - Codepage detectado: cp850
+2025-04-24 10:46:28,313 - INFO - Archivo DBF abierto. Tipo: Db3Table
+2025-04-24 10:46:28,331 - INFO - Registros totales: 104, Registros únicos (sin borrados): 104
+2025-04-24 10:46:28,568 - INFO - Insertados 104 registros del archivo c:\conta32_lekue\temp\tmp104336.dbf
+2025-04-24 10:46:28,584 - INFO - Datos insertados del archivo c:\conta32_lekue\temp\tmp104336.dbf. Total registros: 104
+2025-04-24 10:46:28,584 - INFO - Conexión a la base de datos cerrada.
+2025-04-24 10:46:28,584 - INFO - Fin del proceso para c:\conta32_lekue\temp\tmp104336.dbf. Tiempo total: 0:00:00.343473
